@@ -2,7 +2,7 @@
 # TTL Static Data Generator for LwM2M ontology  #
 # Author: Flor Sanders                          #
 # Project: VOP 2020 - IoT & Solid               #
-# Date: 2020/04/07                              #
+# Date: 2020/04/11                              #
 # Description:                                  #
 #   Generates static data for all supported 	#
 #   objects and resources for 1 device.         #

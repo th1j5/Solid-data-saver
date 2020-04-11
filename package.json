@@ -13,6 +13,8 @@
   "author": "Flor Sanders",
   "license": "UNLICENSED",
   "dependencies": {
+    "@solid/cli": "^0.1.3",
+    "fs": "0.0.1-security",
     "solid-auth-cli": "^1.0.12"
   }
 }
