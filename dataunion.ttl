@@ -1,0 +1,31 @@
+@prefix lwm2m: <https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://localhost:8080/api/clients/thijs-Galago-Pro> rdf:type lwm2m:Device ;
+	lwm2m:contains <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0> ;
+	lwm2m:hasDeviceID "api/clients/thijs-Galago-Pro" .
+
+<http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0> rdf:type lwm2m:LWM2MTemperatureObject, lwm2m:ObjectInstance ;
+	lwm2m:containedBy <http://localhost:8080/api/clients/thijs-Galago-Pro> ;
+	lwm2m:consistsOf <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0/5700/1>, <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0/5700/2>, <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0/5700/0> ;
+	lwm2m:hasObjectInstanceID "0"^^xsd:integer .
+
+<http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0/5700/0> rdf:type lwm2m:SensorValue, lwm2m:ResourceInstance ;
+	lwm2m:organizedInto <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0> ;
+	lwm2m:hasTimeStamp "2020-04-11T15:27:32"^^xsd:dateTime ;
+	lwm2m:hasValue "18.8"^^xsd:float ;
+	lwm2m:hasResourceInstanceID "00"^^xsd:integer .
+
+<http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0/5700/1> rdf:type lwm2m:SensorValue, lwm2m:ResourceInstance ;
+	lwm2m:organizedInto <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0> ;
+	lwm2m:hasTimeStamp "2020-04-12T08:48:18"^^xsd:dateTime ;
+	lwm2m:hasValue "16.5"^^xsd:float ;
+	lwm2m:hasResourceInstanceID "00"^^xsd:integer .
+
+<http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0/5700/2> rdf:type lwm2m:SensorValue, lwm2m:ResourceInstance ;
+	lwm2m:organizedInto <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0> ;
+	lwm2m:hasTimeStamp "2020-04-12T09:48:38"^^xsd:dateTime ;
+	lwm2m:hasValue "15.0"^^xsd:float ;
+	lwm2m:hasResourceInstanceID "01"^^xsd:integer .
+

@@ -1,0 +1,22 @@
+@prefix lwm2m: <https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@base <http://localhost:8080/>.
+
+<api/clients/thijs-Galago-Pro> rdf:type lwm2m:Device;
+	 lwm2m:contains <api/clients/thijs-Galago-Pro/3303/0>;
+	 lwm2m:hasDeviceID "api/clients/thijs-Galago-Pro"^^xsd:string.
+### 3303 Objects
+## 3303 object 0
+<api/clients/thijs-Galago-Pro/3303/0> rdf:type lwm2m:LWM2MTemperatureObject;
+	lwm2m:containedBy <api/clients/thijs-Galago-Pro>;
+	lwm2m:consistsOf <api/clients/thijs-Galago-Pro/3303/0/5700/0>;
+	rdf:type lwm2m:ObjectInstance;
+	lwm2m:hasObjectInstanceID "0"^^xsd:integer.
+## Resources and instances
+<api/clients/thijs-Galago-Pro/3303/0/5700/0> rdf:type lwm2m:SensorValue;
+	lwm2m:organizedInto <api/clients/thijs-Galago-Pro/3303/0>;
+	lwm2m:hasTimeStamp "2020-04-11T15:27:32"^^xsd:dateTime;
+	lwm2m:hasValue "18.8"^^xsd:float;
+	rdf:type lwm2m:ResourceInstance;
+	lwm2m:hasResourceInstanceID "00"^^xsd:integer.

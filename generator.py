@@ -20,7 +20,7 @@ deviceID = "api/clients/thijs-Galago-Pro"
 
 # Temperature parameters
 temperatureObjects = 1  # Amount of temperature objects to be generated
-valuesPerTemperatureObject = 1 # Amount of sensor values per temperature object
+valuesPerTemperatureObject = 2 # Amount of sensor values per temperature object
 averageTemperature = 17 # Average temperature measured
 stdDevTemperature = 1.5 # Standard deviation on the measured temperature
 
@@ -65,7 +65,7 @@ def writeTemperatureOrHumidityObjects(file, deviceID, objectID, objectType, unit
         file.write("\tlwm2m:consistsOf <" + deviceID + "/" + str(objectID) + "/" + str(i) + "/5603/0>;\n")
         file.write("\tlwm2m:consistsOf <" + deviceID + "/" + str(objectID) + "/" + str(i) + "/5604/0>;\n")
         for j in range(valuesPerObject):
-            file.write("\tlwm2m:consistsOf <" + deviceID + "/" + str(objectID) + "/" + str(i) + "/5700/0>;\n")
+            file.write("\tlwm2m:consistsOf <" + deviceID + "/" + str(objectID) + "/" + str(i) + "/5700/"+str(j)+">;\n")
         file.write("\trdf:type lwm2m:ObjectInstance;\n\tlwm2m:hasObjectInstanceID \"" + str(i) + "\"^^xsd:integer.\n")
 
         # Creating the resources and its instances

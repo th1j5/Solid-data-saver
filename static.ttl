@@ -16,6 +16,7 @@
 	lwm2m:consistsOf <api/clients/thijs-Galago-Pro/3303/0/5603/0>;
 	lwm2m:consistsOf <api/clients/thijs-Galago-Pro/3303/0/5604/0>;
 	lwm2m:consistsOf <api/clients/thijs-Galago-Pro/3303/0/5700/0>;
+	lwm2m:consistsOf <api/clients/thijs-Galago-Pro/3303/0/5700/1>;
 	rdf:type lwm2m:ObjectInstance;
 	lwm2m:hasObjectInstanceID "0"^^xsd:integer.
 ## Resources and instances
@@ -28,13 +29,13 @@
 # MinMeasuredValue 00
 <api/clients/thijs-Galago-Pro/3303/0/5601/0> rdf:type lwm2m:MinMeasuredValue;
 	lwm2m:organizedInto <api/clients/thijs-Galago-Pro/3303/0>;
-	lwm2m:hasValue "18.8"^^xsd:float;
+	lwm2m:hasValue "14.5"^^xsd:float;
 	rdf:type lwm2m:ResourceInstance;
 	lwm2m:hasResourceInstanceID "00"^^xsd:integer.
 # MaxMeasuredValue 00
 <api/clients/thijs-Galago-Pro/3303/0/5602/0> rdf:type lwm2m:MaxMeasuredValue;
 	lwm2m:organizedInto <api/clients/thijs-Galago-Pro/3303/0>;
-	lwm2m:hasValue "18.8"^^xsd:float;
+	lwm2m:hasValue "15.6"^^xsd:float;
 	rdf:type lwm2m:ResourceInstance;
 	lwm2m:hasResourceInstanceID "00"^^xsd:integer.
 # MinRangeValue 00
@@ -52,10 +53,17 @@
 # SensorValue 00
 <api/clients/thijs-Galago-Pro/3303/0/5700/0> rdf:type lwm2m:SensorValue;
 	lwm2m:organizedInto <api/clients/thijs-Galago-Pro/3303/0>;
-	lwm2m:hasTimeStamp "2020-04-11T15:27:32"^^xsd:dateTime;
-	lwm2m:hasValue "18.8"^^xsd:float;
+	lwm2m:hasTimeStamp "2020-04-12T08:52:31"^^xsd:dateTime;
+	lwm2m:hasValue "14.5"^^xsd:float;
 	rdf:type lwm2m:ResourceInstance;
 	lwm2m:hasResourceInstanceID "00"^^xsd:integer.
+# SensorValue 01
+<api/clients/thijs-Galago-Pro/3303/0/5700/1> rdf:type lwm2m:SensorValue;
+	lwm2m:organizedInto <api/clients/thijs-Galago-Pro/3303/0>;
+	lwm2m:hasTimeStamp "2020-04-12T09:51:50"^^xsd:dateTime;
+	lwm2m:hasValue "15.6"^^xsd:float;
+	rdf:type lwm2m:ResourceInstance;
+	lwm2m:hasResourceInstanceID "01"^^xsd:integer.
 ### 3304 Objects
 ### Device object
 <api/clients/thijs-Galago-Pro/3/0> rdf:type lwm2m:LWM2MDevice;
