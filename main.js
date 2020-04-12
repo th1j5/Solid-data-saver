@@ -5,63 +5,73 @@
 * Date: 2020/04/11
 * Description: Small script which loads data from a static turtle file and saves it to a specified location on a solid pod.
 */
+
 // Importing required libraries
 const fs = require('fs');    // File system to read in the static file
 const auth = require('solid-auth-cli');  // Solid authorization library for node/command line
 const {once} = require('events');   // Events is needed to synchronize the loading of different datasets
-const graphy = require('graphy');   // Library for manipulating rdf data
-const ttl_read = graphy.content.ttl.read;   // Read function
-const ttl_write = graphy.content.ttl.write; // Write function
-const dataset = graphy.memory.dataset.fast; // Dataset object
-const stream = graphy.core.iso.stream;  // Datastream
+const $rdf = require('rdflib');   // Rdf graph manipulation library
 
 // Program parameters
-const filename = "static.ttl";  // Turtle file with static sensor data
+const staticfile = "static1.ttl";  // Turtle file with static sensor data
+const database = "https://iotsolidugent.inrupt.net/private/static.ttl"; // Static turtle file stored on solid pod
+
 // Credentials (UNSAFE AS ALL HELL - Only other option is a json file with this info, which is just as bad.)
 const idp = "https://inrupt.net";
 const username = "iotsolidugent";
 const password = "***REMOVED***";
 
-// // Function which reads in the contents of the static turtle file and hands them over to the data saver
-// fs.readFile(filename, (err, data) => {
-//     if (err) throw err;
-//     // Simply log the data for now while we develop the data saver functions
-//     // console.log(data.toString());
-// });
+// Creating rdf lib constructs to be used with solid-auth-cli
+const store = $rdf.graph();
+const fetcher = $rdf.fetcher(store);
 
-// // Persistent login function: Checks if session is open and opens one if this was not the case.
-// async function login(credentials) {
-//     console.log(`Login in...`);
-//     var session = await auth.currentSession();
-//     if (!session) session = await auth.login(credentials);
-//     return session;
-// }
+// Loging in using solid-auth-cli
+console.log(`Loggin in...`);
+auth.login({idp, username, password}).then(session => {
+    console.log(`Logged in as ${session.webId}`);
+    // Using the fetcher to get our graph stored in the solid datapod
+    
+    fetcher.nowOrWhenFetched(database, (ok, body, xhr) => {
+        // Check wether fetch returns 200 OK
+        if(!ok){
+            console.log(`Data in ${database} couldn't be fetched.`);    
+        } else {
+            console.log(`${database} fetched succesfully: ${body}`);
+            console.log(`Parsing data...`);
+            try{
+                // Parsing the data
+                $rdf.parse(xhr.responseText, store, database, 'text/turtle');
+                console.log(`Parse succesful!`);
+                // Now read data from static file and add it in as well --> This should be adapted to the dynamically incoming data (in some way!!!): TODO
+                console.log(`Reading file...`);
+                loadFileToString(staticfile).then(data => {
+                    console.log(`File read succesful!`)
+                    console.log(`Parsing file content...`);
+                    try{
+                        $rdf.parse(data, store, database, 'text/turtle');
+                        console.log(`Parse succesful!`);
+                        // TODO: Write the store back to the solid pod!
+                        // console.log($rdf.serialize(null, store, database, 'text/turtle')); // You can use the serialized data to store a local backup! (Just use fs to write it to a local file)
+                    } catch(err) {
+                        console.log(`Parsing error: ${err}`)
+                    }
+                }).catch(err => console.log(`File read error: ${err}`));
+            } catch(err) {
+                console.log(`Parsing error: ${err}`);
+            }
+        }
+    })
+}).catch(err => console.log(`Login error: ${err}`));
 
-// // Login test
-// login({idp, username, password}).then(session => {
-//     console.log(`Logged in as ${session.webId}`);
-// })
-
-// Trying to take the union of two static datasets and saving them to the output file
-let data1 = dataset();
-fs.createReadStream('static1.ttl')
-    .pipe(ttl_read())
-    .pipe(data1);
-let data2 = dataset();
-fs.createReadStream('static2.ttl')
-    .pipe(ttl_read())
-    .pipe(data2);
-outfile = fs.createWriteStream('dataunion.ttl');
-
-(async() => {
-    await Promise.all([
-        once(data1, 'finish'),
-        once(data2, 'finish')
-    ]);
-
-    let dataunion= data1.union(data2);
-    await(Promise.all([dataunion, 'finish']))
-    console.log(data1.size + data2.size)
-    console.log(dataunion.size)
-    dataunion.pipe(ttl_write()).pipe(outfile);
-})();
+// Function to save file contents into a string
+function loadFileToString(filename){
+    return new Promise((resolve, reject) => {
+        fs.readFile(filename, (err, data) =>{
+            if(err){
+                reject(err);
+            } else {
+                resolve(data.toString());
+            }
+        })
+    })
+}

@@ -20,13 +20,13 @@ deviceID = "api/clients/thijs-Galago-Pro"
 
 # Temperature parameters
 temperatureObjects = 1  # Amount of temperature objects to be generated
-valuesPerTemperatureObject = 2 # Amount of sensor values per temperature object
+valuesPerTemperatureObject = 50 # Amount of sensor values per temperature object
 averageTemperature = 17 # Average temperature measured
 stdDevTemperature = 1.5 # Standard deviation on the measured temperature
 
 # Humidity parameters
-humidityObjects = 0  # Amount of temperature objects to be generated
-valuesPerHumidityObject = 0 # Amount of sensor values per temperature object
+humidityObjects = 1  # Amount of temperature objects to be generated
+valuesPerHumidityObject = 50 # Amount of sensor values per temperature object
 averageHumidity = 60 # Average temperature measured
 stdDevHumidity = 5 # Standard deviation on the measured temperature
 
