@@ -14,6 +14,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "fs": "0.0.1-security",
+    "graphy": "^4.1.0",
     "solid-auth-cli": "^1.0.12"
   }
 }

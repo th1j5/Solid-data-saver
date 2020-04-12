@@ -11,11 +11,10 @@ const auth = require('solid-auth-cli');  // Solid authorization library for node
 
 // Program parameters
 const filename = "static.ttl";  // Turtle file with static sensor data
-// Credentials
+// Credentials (UNSAFE AS ALL HELL - Only other option is a json file with this info, which is just as bad.)
 const idp = "https://inrupt.net";
 const username = "iotsolidugent";
 const password = "***REMOVED***";
-const credentials = "credentials.json"; // File containing credentials needed for login (UNSAFE!!!)
 
 // Function which reads in the contents of the static turtle file and hands them over to the data saver
 fs.readFile(filename, (err, data) => {
@@ -24,7 +23,14 @@ fs.readFile(filename, (err, data) => {
     // console.log(data.toString());
 });
 
-console.log("Loggin in...")
-auth.login({idp, username, password}).then(session => {
-    console.log(`logged in as ${session.webId}`);
-}, err => console.log("Error logging in: " + err));
+// Persistent login function: Checks if session is open and opens one if this was not the case.
+async function login(credentials) {
+    console.log(`Login in...`);
+    var session = await auth.currentSession();
+    if (!session) session = await auth.login(credentials);
+    return session;
+}
+
+login({idp, username, password}).then(session => {
+    console.log(`Logged in as ${session.webId}`);
+})
