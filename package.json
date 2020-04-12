@@ -13,9 +13,7 @@
   "author": "Flor Sanders",
   "license": "MIT",
   "dependencies": {
-    "events": "^3.1.0",
     "fs": "0.0.1-security",
-    "graphy": "^4.1.0",
     "rdflib": "^1.1.0",
     "solid-auth-cli": "^1.0.12"
   }

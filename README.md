@@ -2,8 +2,10 @@
 ## Description
 Some code which allows us to save static data in a users datapod (if their credentials are available) without interfacing through any GUI.
 - main.js: Contains all code needed to upload the static data.
-- static.ttl: Turtle file containing static data.
+- static(1/2).ttl: Turtle file containing static data.
+- backup.ttl: Turtle file which serves as local backup of the online graph (saved in main.js)
 - generator.py: Python script used to generate static.ttl.
+- test.js: Random test file to try out a few things here and there.
 
 ## Installation and usage
 

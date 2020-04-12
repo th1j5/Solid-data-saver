@@ -1,0 +1,197 @@
+@prefix : <#>.
+@prefix lwm2m: <https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix cli: <http://localhost:8080/api/clients/>.
+@prefix n0: <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/>.
+@prefix n1: <http://localhost:8080/api/clients/thijs-Galago-Pro/1/>.
+@prefix n2: <http://localhost:8080/api/clients/thijs-Galago-Pro/1/0/0/>.
+@prefix n3: <http://localhost:8080/api/clients/thijs-Galago-Pro/1/0/1/>.
+@prefix n4: <http://localhost:8080/api/clients/thijs-Galago-Pro/1/0/2/>.
+@prefix n5: <http://localhost:8080/api/clients/thijs-Galago-Pro/1/0/3/>.
+@prefix n6: <http://localhost:8080/api/clients/thijs-Galago-Pro/3/>.
+@prefix n7: <http://localhost:8080/api/clients/thijs-Galago-Pro/3/0/0/>.
+@prefix n8: <http://localhost:8080/api/clients/thijs-Galago-Pro/3/0/1/>.
+@prefix n9: <http://localhost:8080/api/clients/thijs-Galago-Pro/3/0/10/>.
+@prefix n10: <http://localhost:8080/api/clients/thijs-Galago-Pro/3/0/2/>.
+@prefix n11: <http://localhost:8080/api/clients/thijs-Galago-Pro/3/0/3/>.
+@prefix n12: <http://localhost:8080/api/clients/thijs-Galago-Pro/3/0/7/>.
+@prefix n13: <http://localhost:8080/api/clients/thijs-Galago-Pro/3/0/8/>.
+@prefix n14: <http://localhost:8080/api/clients/thijs-Galago-Pro/3/0/9/>.
+@prefix n15: <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0/5601/>.
+@prefix n16: <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0/5602/>.
+@prefix n17: <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0/5603/>.
+@prefix n18: <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0/5604/>.
+@prefix n19: <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0/5700/>.
+@prefix n20: <http://localhost:8080/api/clients/thijs-Galago-Pro/3303/0/5701/>.
+@prefix link: <http://www.w3.org/2007/ont/link#>.
+@prefix tur: <http://www.w3.org/ns/iana/media-types/text/turtle#>.
+@prefix ldp: <http://www.w3.org/ns/ldp#>.
+@prefix lin: <http://www.iana.org/assignments/link-relations/>.
+@prefix rd: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix http: <http://www.w3.org/2007/ont/http#>.
+@prefix httph: <http://www.w3.org/2007/ont/httph#>.
+
+cli:thijs-Galago-Pro
+    a lwm2m:Device;
+    lwm2m:contains n0:0;
+    lwm2m:hasDeviceID "api/clients/thijs-Galago-Pro".
+n1:0
+    a lwm2m:LWM2MDevice, lwm2m:ObjectInstance;
+    lwm2m:consistsOf n2:0, n3:0, n4:0, n5:0;
+    lwm2m:containedBy cli:thijs-Galago-Pro;
+    lwm2m:hasObjectInstanceID 0.
+n2:0
+    a lwm2m:ResourceInstance, lwm2m:ShortServerID;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue 888888888;
+    lwm2m:organizedInto n1:0.
+n3:0
+    a lwm2m:Lifetime, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue 9000;
+    lwm2m:organizedInto n1:0.
+n4:0
+    a lwm2m:DefaultMinimumPeriod, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue 20;
+    lwm2m:organizedInto n1:0.
+n5:0
+    a lwm2m:DefaultMaximumPeriod, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue 60;
+    lwm2m:organizedInto n1:0.
+n6:0
+    a lwm2m:LWM2MDevice, lwm2m:ObjectInstance;
+    lwm2m:consistsOf n7:0, n8:0, n9:0, n10:0, n11:0, n12:0, n13:0, n14:0;
+    lwm2m:containedBy cli:thijs-Galago-Pro;
+    lwm2m:hasObjectInstanceID 0.
+n7:0
+    a lwm2m:Manufacturer, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue "CompanyXYZ";
+    lwm2m:organizedInto n6:0.
+n8:0
+    a lwm2m:ModelNumber, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue "XXX-XXXXX-XXXX";
+    lwm2m:organizedInto n6:0.
+n9:0
+    a lwm2m:MemoryFree, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue 1024;
+    lwm2m:organizedInto n6:0.
+n10:0
+    a lwm2m:ResourceInstance, lwm2m:SerialNumber;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue "QWERTYXYZABC";
+    lwm2m:organizedInto n6:0.
+n11:0
+    a lwm2m:FirmWareVersion, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue "1.0.0a";
+    lwm2m:organizedInto n6:0.
+n12:0
+    a lwm2m:PowerSourceVoltage, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue "3000"^^xsd:float;
+    lwm2m:organizedInto n6:0.
+n13:0
+    a lwm2m:PowerSourceCurrent, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue "20"^^xsd:float;
+    lwm2m:organizedInto n6:0.
+n14:0
+    a lwm2m:BatteryLevel, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue "55"^^xsd:float;
+    lwm2m:organizedInto n6:0.
+n0:0
+    a lwm2m:LWM2MTemperatureObject, lwm2m:ObjectInstance;
+    lwm2m:consistsOf
+    n15:0, n16:0, n17:0, n18:0, n19:0, n19:1, n19:499, n19:500, n20:0;
+    lwm2m:containedBy cli:thijs-Galago-Pro;
+    lwm2m:hasObjectInstanceID 0.
+n15:0
+    a lwm2m:MinMeasuredValue, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue "15.5"^^xsd:float;
+    lwm2m:organizedInto n0:0.
+n16:0
+    a lwm2m:MaxMeasuredValue, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue "19.4"^^xsd:float;
+    lwm2m:organizedInto n0:0.
+n17:0
+    a lwm2m:MinRangeValue, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue "-20.0"^^xsd:float;
+    lwm2m:organizedInto n0:0.
+n18:0
+    a lwm2m:MaxRangeValue, lwm2m:ResourceInstance;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue "100.0"^^xsd:float;
+    lwm2m:organizedInto n0:0.
+n19:0
+    a lwm2m:ResourceInstance, lwm2m:SensorValue;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasTimeStamp "2020-04-12T08:58:09"^^xsd:dateTime;
+    lwm2m:hasValue "15.5"^^xsd:float;
+    lwm2m:organizedInto n0:0.
+n19:1
+    a lwm2m:ResourceInstance, lwm2m:SensorValue;
+    lwm2m:hasResourceInstanceID 1;
+    lwm2m:hasTimeStamp "2020-04-12T09:57:34"^^xsd:dateTime;
+    lwm2m:hasValue "19.4"^^xsd:float;
+    lwm2m:organizedInto n0:0.
+n19:499
+    a lwm2m:ResourceInstance, lwm2m:SensorValue;
+    lwm2m:hasResourceInstanceID 0, 00;
+    lwm2m:hasTimeStamp "2020-04-11T15:27:32"^^xsd:dateTime;
+    lwm2m:hasValue "18.8"^^xsd:float;
+    lwm2m:organizedInto n0:0.
+n19:500
+    a lwm2m:ResourceInstance, lwm2m:SensorValue;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasTimeStamp "2020-04-11T15:27:32"^^xsd:dateTime;
+    lwm2m:hasValue "18.8"^^xsd:float;
+    lwm2m:organizedInto n0:0.
+n20:0
+    a lwm2m:ResourceInstance, lwm2m:SensorUnits;
+    lwm2m:hasResourceInstanceID 0;
+    lwm2m:hasValue "deg C";
+    lwm2m:organizedInto n0:0.
+<>
+    a link:Document, link:RDFDocument, tur:Resource, ldp:Resource;
+    lin:acl <static.ttl.acl>;
+    lin:describedBy <static.ttl.meta>.
+[
+    rd:label
+        "[21:8:18]  Request for https://iotsolidugent.inrupt.net/private/static.ttl";
+    link:requestedURI "https://iotsolidugent.inrupt.net/private/static.ttl";
+    link:response
+            [
+                http:status 200;
+                http:statusText "OK";
+                httph:access-control-allow-credentials "true";
+                httph:access-control-expose-headers
+                    "Authorization, User, Location, Link, Vary, Last-Modified, ETag, Accept-Patch, Accept-Post, Updates-Via, Allow, WAC-Allow, Content-Length, WWW-Authenticate, MS-Author-Via";
+                httph:allow "OPTIONS, HEAD, GET, PATCH, POST, PUT, DELETE";
+                httph:connection "close";
+                httph:content-type "text/turtle";
+                httph:date "Sun, 12 Apr 2020 19:08:20 GMT";
+                httph:link
+                    "<static.ttl.acl>; rel=\"acl\", <static.ttl.meta>; rel=\"describedBy\", <http://www.w3.org/ns/ldp#Resource>; rel=\"type\"";
+                httph:ms-author-via "SPARQL";
+                httph:set-cookie
+                    "nssidp.sid=s%3AvKSzLFQk-OqZnBvcDe6RHHudClUelxAa.R2GsxQ8qtd9h4tZr5%2FVZlZtN9J42a3wgWASxCBy6IeI; Domain=.inrupt.net; Path=/; Expires=Mon, 13 Apr 2020 19:08:20 GMT; HttpOnly; Secure";
+                httph:transfer-encoding "chunked";
+                httph:updates-via "wss://iotsolidugent.inrupt.net";
+                httph:vary "Accept, Authorization, Origin";
+                httph:wac-allow
+                "user=\"read write append control\",public=\"\"";
+                httph:x-powered-by "solid-server/5.2.3"
+            ];
+    link:status
+            ( "[21:8:18.766] N3 parsed: 146 triples in 155 lines."
+            "[21:8:18.766] Done." )
+].
