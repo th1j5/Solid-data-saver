@@ -12,7 +12,7 @@ const auth = require('solid-auth-cli');  // Solid authorization library for node
 const $rdf = require('rdflib');   // Rdf graph manipulation library
 
 // Program parameters
-const staticfile = "static1.ttl";  // Turtle file with static sensor data
+const staticfile = "assets/static1.ttl";  // Turtle file with static sensor data
 const database = "https://iotsolidugent.inrupt.net/private/static.ttl"; // Static turtle file stored on solid pod
 const backupfile = "backup.ttl";
 

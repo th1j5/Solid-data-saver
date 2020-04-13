@@ -6,8 +6,8 @@ const {once} = require('events');   // Events is needed to synchronize the loadi
 const $rdf = require('rdflib');   // Rdf graph manipulation library
 
 // Static datafiles
-file1 = 'static1.ttl';
-file2 = 'static2.ttl';
+file1 = '../assets/static1.ttl';
+file2 = '../assets/static2.ttl';
 
 // Creating rdf lib constructs to be used with solid-auth-cli
 const store = $rdf.graph();
