@@ -1,0 +1,82 @@
+@base <http://localhost.com:8080/api/clients/> . 
+
+@prefix : <http://example.com/rmlmapping/> . # just representing the local mapping.ttl RDF graph
+@prefix base: <http://base.com/> .
+
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix lwm2m: <https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#> .
+
+:datasource
+    rml:source "data-preprocessed.json";
+    rml:referenceFormulation ql:JSONPath;
+    rml:iterator "$" # something strange is going on with the iterator! (<-> specs)
+    .
+
+:DeviceMap a rr:TriplesMap;
+  rml:logicalSource :datasource;
+
+  rr:subjectMap [ 
+    rr:template "http://base.com/{ep}";
+    rr:class lwm2m:Device
+  ];
+
+  rr:predicateObjectMap [ 
+    rr:predicate lwm2m:hasDeviceID ; 
+    rr:objectMap [ rml:reference "ep" ; rr:datatype xsd:string ]
+    # see specs: normale should be "$.ep"
+  ],
+  [ 
+    rr:predicate lwm2m:contains ;
+    rr:objectMap [ rr:parentTriplesMap :ObjectInstanceMap ]
+  ].
+
+:ObjectInstanceMap a rr:TriplesMap;
+  rml:logicalSource :datasource;
+
+  rr:subjectMap [
+    rr:template "http://base.com/{ep}/{object}/{objectInstance}";
+    rr:class lwm2m:ObjectInstance;
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate rdf:type;
+    rr:objectMap [ rr:template "https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#{object}" ]
+  ],
+  [
+    rr:predicate lwm2m:containedBy;
+    rr:objectMap [ rr:parentTriplesMap :DeviceMap ]
+  ],
+  [
+    rr:predicate lwm2m:consistsOf;
+    rr:objectMap [ rr:parentTriplesMap :ResourceMap ]
+  ].
+
+:ResourceMap a rr:TriplesMap;
+  rml:logicalSource :datasource;
+
+  rr:subjectMap [
+    rr:template "http://base.com/{ep}/{object}/{objectInstance}/{resource}";
+    rr:class lwm2m:ResourceInstance
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate lwm2m:hasValue;
+    rr:objectMap [ rml:reference "val.value" ; rr:datatype xsd:float ]
+  ],
+  [
+    rr:predicate rdf:type;
+    rr:objectMap [ rr:template "https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#{resource}" ]
+  ],
+  [
+    rr:predicate lwm2m:organizedInto;
+    rr:objectMap [ rr:parentTriplesMap :ObjectInstanceMap ]
+  ],
+  [
+    rr:predicate lwm2m:hasTimeStamp;
+    rr:objectMap [ rml:reference "timestamp" ; rr:datatype xsd:dateTime ]
+  ].
