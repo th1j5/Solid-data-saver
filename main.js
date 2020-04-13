@@ -24,7 +24,6 @@ const password = "***REMOVED***";
 // Creating rdf lib constructs to be used with solid-auth-cli
 const store = $rdf.graph();
 const fetcher = new $rdf.Fetcher(store);
-const updater = new $rdf.UpdateManager(store);
 
 // Loging in using solid-auth-cli
 console.log(`Loggin in...`);
@@ -76,7 +75,7 @@ auth.login({idp, username, password}).then(session => {
 // Function to save file contents into a string
 function loadFileToString(filename){
     return new Promise((resolve, reject) => {
-        fs.readFile(filename, (err, data) =>{
+        fs.readFile(filename, (err, data) => {
             if(err){
                 reject(err);
             } else {
