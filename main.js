@@ -9,7 +9,6 @@
 // Importing required libraries
 const fs = require('fs');    // File system to read in the static file
 const auth = require('solid-auth-cli');  // Solid authorization library for node/command line
-const {once} = require('events');   // Events is needed to synchronize the loading of different datasets
 const $rdf = require('rdflib');   // Rdf graph manipulation library
 
 // Program parameters

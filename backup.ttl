@@ -166,7 +166,7 @@ n20:0
     lin:describedBy <static.ttl.meta>.
 [
     rd:label
-        "[21:8:18]  Request for https://iotsolidugent.inrupt.net/private/static.ttl";
+        "[7:46:50]  Request for https://iotsolidugent.inrupt.net/private/static.ttl";
     link:requestedURI "https://iotsolidugent.inrupt.net/private/static.ttl";
     link:response
             [
@@ -178,20 +178,20 @@ n20:0
                 httph:allow "OPTIONS, HEAD, GET, PATCH, POST, PUT, DELETE";
                 httph:connection "close";
                 httph:content-type "text/turtle";
-                httph:date "Sun, 12 Apr 2020 19:08:20 GMT";
+                httph:date "Mon, 13 Apr 2020 05:46:54 GMT";
                 httph:link
                     "<static.ttl.acl>; rel=\"acl\", <static.ttl.meta>; rel=\"describedBy\", <http://www.w3.org/ns/ldp#Resource>; rel=\"type\"";
                 httph:ms-author-via "SPARQL";
                 httph:set-cookie
-                    "nssidp.sid=s%3AvKSzLFQk-OqZnBvcDe6RHHudClUelxAa.R2GsxQ8qtd9h4tZr5%2FVZlZtN9J42a3wgWASxCBy6IeI; Domain=.inrupt.net; Path=/; Expires=Mon, 13 Apr 2020 19:08:20 GMT; HttpOnly; Secure";
+                    "nssidp.sid=s%3A-sfxwlL6MC0F3b8-USL9vhL_Vas1FfRY.ljI2IgApZsU7ljNir5PNT5%2FekNBgylpvS7xHgEvvlWY; Domain=.inrupt.net; Path=/; Expires=Tue, 14 Apr 2020 05:46:54 GMT; HttpOnly; Secure";
                 httph:transfer-encoding "chunked";
                 httph:updates-via "wss://iotsolidugent.inrupt.net";
                 httph:vary "Accept, Authorization, Origin";
                 httph:wac-allow
                 "user=\"read write append control\",public=\"\"";
-                httph:x-powered-by "solid-server/5.2.3"
+                httph:x-powered-by "solid-server/5.2.4"
             ];
     link:status
-            ( "[21:8:18.766] N3 parsed: 146 triples in 155 lines."
-            "[21:8:18.766] Done." )
+            ( "[7:46:51.345] N3 parsed: 146 triples in 155 lines."
+            "[7:46:51.345] Done." )
 ].
