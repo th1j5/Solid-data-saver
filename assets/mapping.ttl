@@ -13,38 +13,40 @@
 
 @prefix lwm2m: <https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#> .
 
+#### DATASOURCE
 :datasource
     rml:source "data.json";
     rml:referenceFormulation ql:JSONPath;
     rml:iterator "$" # something strange is going on with the iterator! (<-> specs)
     .
-
+#### DEVICE
 :DeviceMap a rr:TriplesMap;
   rml:logicalSource :datasource;
 
   rr:subjectMap [ 
-    rr:template "http://base.com/{ep}";
-    rr:class lwm2m:Device
+    rr:template "{protocol}://{domain}/{ep}";
+    rr:class lwm2m:Device;
   ];
 
   rr:predicateObjectMap [ 
     rr:predicate lwm2m:hasDeviceID ; 
-    rr:objectMap [ rml:reference "ep" ; rr:datatype xsd:string ]
+    rr:objectMap [ rml:reference "$.ep" ; rr:datatype xsd:string ]
     # see specs: normale should be "$.ep"
+    # This works NOT with rmlmapper in java, but it does for RocketRML in Javascript
   ],
   [ 
     rr:predicate lwm2m:contains ;
     rr:objectMap [ rr:parentTriplesMap :ObjectInstanceMap ]
   ].
-
+#### OBJECT
 :ObjectInstanceMap a rr:TriplesMap;
   rml:logicalSource :datasource;
 
-  rr:subjectMap :ObjectInstanceFunctionMap;
-  #rr:subjectMap [
-    #rr:template "http://base.com/{ep}/{object}/{objectInstance}";
-  #  rr:class lwm2m:ObjectInstance;
-  #];
+  #rr:subjectMap :ObjectInstanceFunctionMap;	# This doesn't work to create an IRI created by function
+  rr:subjectMap [
+    rr:template "{protocol}://{domain}/{ep}/{object}/{objectInstance}";
+    rr:class lwm2m:ObjectInstance;
+  ];
 
   rr:predicateObjectMap [
     rr:predicate rdf:type;
@@ -58,12 +60,12 @@
     rr:predicate lwm2m:consistsOf;
     rr:objectMap [ rr:parentTriplesMap :ResourceMap ]
   ].
-
+#### RESOURCE
 :ResourceMap a rr:TriplesMap;
   rml:logicalSource :datasource;
 
   rr:subjectMap [
-    rr:template "http://base.com/{ep}/{object}/{objectInstance}/{resource}";
+    rr:template "{protocol}://{domain}/{ep}/{object}/{objectInstance}/{resource}";
     rr:class lwm2m:ResourceInstance
   ];
 
@@ -86,7 +88,7 @@
     #rr:objectMap [ :TimeStampFunctionMap ; rr:datatype xsd:dateTime ]
   ].
 
-## FunctionMaps
+#### FunctionMaps
 :TimeStampFunctionMap a fnml:FunctionMap;		#a fno:Function; # It's not a function! but a functionMap
   rr:datatype xsd:dateTime; # output type -> dateTime
   fnml:functionValue [
@@ -100,6 +102,9 @@
       rr:object "This should not be needed, since this function has no input parameters"
     ]
   ] .
+
+
+#### OBSOLETE
 ## Stop thinking functions
 :ObjectInstanceFunctionMap a fnml:FunctionMap;
   rr:constant <testing>;
@@ -118,7 +123,7 @@
       rr:objectMap [ rr:reference "res" ];
     ]
   ].
-<testing> rdf:PlainLiteral "http://test.com/" .
+#<testing> rdf:PlainLiteral "http://test.com/" .
 
 ## Functions
 #<http://functions.com/func#timestamp> a fno:Function;
