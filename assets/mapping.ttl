@@ -66,6 +66,7 @@
 
   rr:subjectMap [
     rr:template "{protocol}://{domain}/{ep}/{object}/{objectInstance}/{resource}";
+    rr:termType rr:BlankNode;
     rr:class lwm2m:ResourceInstance
   ];
 
