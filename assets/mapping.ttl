@@ -14,7 +14,7 @@
 @prefix lwm2m: <https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#> .
 
 :datasource
-    rml:source "assets/data-preprocessed.json";
+    rml:source "data.json";
     rml:referenceFormulation ql:JSONPath;
     rml:iterator "$" # something strange is going on with the iterator! (<-> specs)
     .
@@ -40,10 +40,11 @@
 :ObjectInstanceMap a rr:TriplesMap;
   rml:logicalSource :datasource;
 
-  rr:subjectMap [
-    rr:template "http://base.com/{ep}/{object}/{objectInstance}";
-    rr:class lwm2m:ObjectInstance;
-  ];
+  rr:subjectMap :ObjectInstanceFunctionMap;
+  #rr:subjectMap [
+    #rr:template "http://base.com/{ep}/{object}/{objectInstance}";
+  #  rr:class lwm2m:ObjectInstance;
+  #];
 
   rr:predicateObjectMap [
     rr:predicate rdf:type;
@@ -81,13 +82,13 @@
   [
     rr:predicate lwm2m:hasTimeStamp;
     #rr:objectMap [ rml:reference <> ; rr:datatype xsd:dateTime ]
-    rr:objectMap :TimeStampFunctionMap
+    rr:objectMap :TimeStampFunctionMap;
     #rr:objectMap [ :TimeStampFunctionMap ; rr:datatype xsd:dateTime ]
   ].
 
 ## FunctionMaps
 :TimeStampFunctionMap a fnml:FunctionMap;		#a fno:Function; # It's not a function! but a functionMap
-  rr:datatype xsd:dateTime; # output time
+  rr:datatype xsd:dateTime; # output type -> dateTime
   fnml:functionValue [
     rml:logicalSource :datasource ;
     rr:predicateObjectMap [
@@ -96,9 +97,29 @@
     ],
     [
       rr:predicate <inputString> ;
-      rr:object "This should not be needed"
+      rr:object "This should not be needed, since this function has no input parameters"
     ]
   ] .
+## Stop thinking functions
+:ObjectInstanceFunctionMap a fnml:FunctionMap;
+  rr:constant <testing>;
+  fnml:functionValue [
+    rml:logicalSource :datasource ;
+    rr:predicateObjectMap [
+      rr:predicate fno:executes ;
+      rr:objectMap [ rr:constant <http://functions.com/func#objectInstance> ]
+    ],
+    [
+      rr:predicate <inputString> ;
+      rr:objectMap [ rr:reference "ep" ];
+    ],
+    [
+      rr:predicate <inputString> ;
+      rr:objectMap [ rr:reference "res" ];
+    ]
+  ].
+<testing> rdf:PlainLiteral "http://test.com/" .
+
 ## Functions
 #<http://functions.com/func#timestamp> a fno:Function;
 #  fno:name "Timestamp of current time";
