@@ -13,6 +13,7 @@
   "author": "Flor Sanders",
   "license": "MIT",
   "dependencies": {
+    "eventsource": "^1.0.7",
     "fs": "0.0.1-security",
     "rdflib": "^1.1.0",
     "rocketrml": "^1.5.0",
