@@ -1,2 +1,5 @@
 node_modules
+# ignore swap files from VIM
 *.swp
+# don't follow output files of RocketRML
+out.n3

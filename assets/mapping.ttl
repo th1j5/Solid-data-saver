@@ -11,8 +11,6 @@
 @prefix fnml: <http://semweb.mmlab.be/ns/fnml#> . # functions
 @prefix fno: <http://w3id.org/function/ontology#> .
 
-@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
-
 @prefix lwm2m: <https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#> .
 
 :datasource
@@ -82,24 +80,43 @@
   ],
   [
     rr:predicate lwm2m:hasTimeStamp;
-    rr:objectMap [ rml:reference "timestamp" ; rr:datatype xsd:dateTime ]
+    #rr:objectMap [ rml:reference <> ; rr:datatype xsd:dateTime ]
+    rr:objectMap :TimeStampFunctionMap
+    #rr:objectMap [ :TimeStampFunctionMap ; rr:datatype xsd:dateTime ]
   ].
 
-  ## Functions
-
-:TestFunctionMap
+## FunctionMaps
+:TimeStampFunctionMap a fnml:FunctionMap;		#a fno:Function; # It's not a function! but a functionMap
+  rr:datatype xsd:dateTime; # output time
   fnml:functionValue [
-             rml:logicalSource :datasource ;
-             rr:predicateObjectMap [
-                 rr:predicate fno:executes ;
-                 rr:objectMap [ rr:constant grel:createDescription ]
-             ],
-             [
-                 rr:predicate grel:inputString ;
-                 rr:objectMap [ rml:reference "name" ]
-             ],
-             [
-                 rr:predicate grel:inputString ;
-                 rr:objectMap [ rml:reference "age" ]
-             ];
+    rml:logicalSource :datasource ;
+    rr:predicateObjectMap [
+      rr:predicate fno:executes ;
+      rr:objectMap [ rr:constant <http://functions.com/func#timestamp> ]
+    ],
+    [
+      rr:predicate <inputString> ;
+      rr:object "This should not be needed"
+    ]
   ] .
+## Functions
+#<http://functions.com/func#timestamp> a fno:Function;
+#  fno:name "Timestamp of current time";
+#  fno:output ( [fno:predicate xsd:dateTime] ) .
+
+#:TestFunctionMap a fno:Function;
+#  fnml:functionValue [
+#             rml:logicalSource :datasource ;
+#             rr:predicateObjectMap [
+#                 rr:predicate fno:executes ;
+#                 rr:objectMap [ rr:constant <http://functions.com/func#createDescription> ]
+#             ],
+#             [
+#                 rr:predicate _:inputString ;
+#                 rr:objectMap [ rml:reference "name" ]
+#             ],
+#             [
+#                 rr:predicate _:inputString ;
+#                 rr:objectMap [ rml:reference "age" ]
+#             ];
+#  ] .

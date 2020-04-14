@@ -53,5 +53,5 @@
               rr:predicateObjectMap [
                   rr:predicate <inputString> ;
                   rr:objectMap [ rml:reference "age" ]
-              ];
+              ]
          ] .

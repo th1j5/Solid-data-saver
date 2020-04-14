@@ -16,17 +16,20 @@ const rmlmappingfile = "assets/mapping.ttl" // RML file - TODO: input file speci
 const rmloutput = 'output/out.n3'
 const rmloptions = {
     toRDF: true,
-    verbose: true,
+    verbose: false,
     xmlPerformanceMode: false,
     replace: false};
 rmloptions.functions = {
-    'http://functions.com/': data => data
+    //'http://functions.com/func#timestamp': data => { return new Date().toISOString(); },
+    'http://functions.com/func#timestamp': function(data) { return new Date().toISOString(); }
+    //'http://functions.com/func#createDescription': data => { return 'This is a description'; },
 };
 
 // testing RML rocket
 const doMapping = async () => {
   const result = await rml.parseFile(rmlmappingfile, rmloutput, rmloptions)
 		.catch((err) => { console.log(err); });
+  console.log(typeof (result));
   console.log(result);
 };
 doMapping();

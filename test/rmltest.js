@@ -2,7 +2,7 @@ const parser = require('rocketrml');
 
 const doMapping = async () => {
   const options = {
-    toRDF: false,
+    toRDF: true,
     verbose: true,
     xmlPerformanceMode: false,
     replace: false,

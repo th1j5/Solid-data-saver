@@ -15,7 +15,7 @@
   "dependencies": {
     "fs": "0.0.1-security",
     "rdflib": "^1.1.0",
-    "rocketrml": "^1.4.2",
+    "rocketrml": "^1.5.0",
     "solid-auth-cli": "^1.0.12"
   }
 }
