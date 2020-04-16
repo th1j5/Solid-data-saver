@@ -6,20 +6,23 @@ const {once} = require('events');   // Events is needed to synchronize the loadi
 const $rdf = require('rdflib');   // Rdf graph manipulation library
 
 // Static datafiles
-file1 = '../assets/static1.ttl';
-file2 = '../assets/static2.ttl';
+file1 = '../assets/static1_thijs.ttl';
+file2 = '../assets/static2_thijs.ttl';
 
 // Creating rdf lib constructs to be used with solid-auth-cli
 const store = $rdf.graph();
+const store2 = $rdf.graph();
 
 // Loading both files to string
 loadFileToString(file1).then(data1 => {
     loadFileToString(file2).then(data2 => {
         // Parse both files into the store (let's hope this results in a single merged graph!)
         $rdf.parse(data1, store, 'https://www.example.com/' + file1, 'text/turtle');
-        $rdf.parse(data2, store, 'https://www.example.com/' + file1, 'text/turtle');
+        $rdf.parse(data2, store, 'https://www.example.com/' + file2, 'text/turtle');
         
-        console.log($rdf.serialize(null, store, 'https://www.example.com/' + file1, 'text/turtle'));
+	//store.add(store2);
+        console.log($rdf.serialize(null, store, 'https://www.example.com/', 'text/turtle'));
+        //console.log($rdf.serialize(null, store2, 'https://www.example.com/' + file1, 'application/n-triples'));
     }).catch(err => console.log(err));
 }).catch(err => console.log(err))
 

@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.ugent.be/fpsander/soliddatasaver.git"
   },
-  "author": "Flor Sanders",
+  "author": "Flor Sanders, Thijs Paelman",
   "license": "MIT",
   "dependencies": {
     "eventsource": "^1.0.7",
