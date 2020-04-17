@@ -4,6 +4,8 @@
   "description": "\u0016Saving data to a solid pod from a Node.Js server.",
   "main": "main.js",
   "scripts": {
+    "start": "node src/main.mjs",
+    "dev": "nodemon src/main.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,5 +20,11 @@
     "rdflib": "^1.1.0",
     "rocketrml": "^1.5.0",
     "solid-auth-cli": "^1.0.12"
-  }
+  },
+  "keywords": [
+    "RDF",
+    "JSON",
+    "RML",
+    "Solid"
+  ]
 }

@@ -28,5 +28,5 @@ leshanServers.forEach( leshanServer => {
 function notificationCallback(msg) {
 	const leshanServer = leshanServers.find( ({origin: o}) => o === msg.origin); // retrieve origin server from list of servers (using destructuring assignement)
 	let content = JSON.parse(msg.data);
-	jsonToRDF(content).then(data => {console.log(data)});
+	jsonToRDF(content, leshanServer).then(data => {console.log(data)});
 };
