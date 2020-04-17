@@ -46,7 +46,7 @@ solidLogIn();
 export default function addResourceMeasurement(graph, solidPod) {
 	const tempStore = new $rdf.Formula;
 	//const tempStore = $rdf.graph(); // VERY STRANGE: IndexedFormula doesn't work, but graph() does... They SHOULD be synonym
-	$rdf.parse(graph, tempStore, solidPod.podData.iotDoc.value, 'text/turtle');
+	$rdf.parse(graph, tempStore, solidPod.podData.iotDoc.value, 'text/n3');
 	solidPod.updater.update(null, tempStore, callbackUpdate);
 }
 function callbackUpdate(uri, success, err) {

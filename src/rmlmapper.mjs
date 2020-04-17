@@ -9,7 +9,7 @@
 // Importing required libraries
 import fs from 'fs';    	// File system to read in the static file
 import rml from 'rocketrml'; 	// RML mapper to map JSON --> RDF
-import { v4 as uuidv4 } from 'uuid'; // Random ID generator
+import uuid from 'uuid'; // Random ID generator
 // Program parameters
 import {lwm2mOnto as ontology, rmlmappingfile, rmloptions, skolemization} from '../config/config.mjs';
 
@@ -41,7 +41,7 @@ function preprocessJSON(leshanJSONdata, lserver) {
 	leshanJSONdata.resource = objectHierarchy[2];
 	if (skolemization) {
 		// Could dynamically import uuid, but this is not suggested
-		leshanJSONdata.skolemIRI = uuidv4();
+		leshanJSONdata.skolemIRI = uuid.v4();
 	}
 
 	return { 'data.json': JSON.stringify(leshanJSONdata)}; // RML data in
