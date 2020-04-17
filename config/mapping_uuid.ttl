@@ -44,13 +44,18 @@
 
   #rr:subjectMap :ObjectInstanceFunctionMap;	# This doesn't work to create an IRI created by function
   rr:subjectMap [
+    rr:class lwm2m:ObjectInstance; # This doesn't work anymore? --> set at Function --> extra predicate
     rr:template "{protocol}://{domain}/{ep}/{object}/{objectInstance}";
-    rr:class lwm2m:ObjectInstance;
   ];
 
   rr:predicateObjectMap [
     rr:predicate rdf:type;
-    rr:objectMap [ rr:template "https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#{object}" ]
+    #rr:objectMap [ rr:template "https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#{object}" ];
+    rr:objectMap :ObjectClassIRIFunctionMap; # should map 3303 --> LWM2MTemperatureObject
+  ],
+  [ # sad that we need an extra predicate node, because rr:class or rr:object or rr:constant (see rest of document) should work
+    rr:predicate rdf:type;
+    rr:object lwm2m:ObjectInstance;
   ],
   [
     rr:predicate lwm2m:containedBy;
@@ -59,13 +64,17 @@
   [
     rr:predicate lwm2m:consistsOf;
     rr:objectMap [ rr:parentTriplesMap :ResourceMap ]
+  ],
+  [
+    rr:predicate lwm2m:hasObjectInstanceID;
+    rr:objectMap [ rr:reference "$.objectInstance" ; rr:datatype xsd:integer ]
   ].
 #### RESOURCE
 :ResourceMap a rr:TriplesMap;
   rml:logicalSource :datasource;
 
   rr:subjectMap [
-    rr:template "{protocol}://{domain}/{ep}/{object}/{objectInstance}/{resource}";
+    rr:template "{protocol}://{domain}/.well-known/genid/{skolemIRI}";
     rr:class lwm2m:ResourceInstance
   ];
 
@@ -75,7 +84,12 @@
   ],
   [
     rr:predicate rdf:type;
-    rr:objectMap [ rr:template "https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#{resource}" ]
+    #rr:objectMap [ rr:template "https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#{resource}" ]
+    rr:objectMap :ResourceClassIRIFunctionMap
+  ],
+  [ # sad that we need an extra predicate node, because rr:class or rr:object or rr:constant (see rest of document) should work
+    rr:predicate rdf:type;
+    rr:object lwm2m:ResourceInstance;
   ],
   [
     rr:predicate lwm2m:organizedInto;
@@ -89,6 +103,7 @@
   ].
 
 #### FunctionMaps
+## TimeStamp
 :TimeStampFunctionMap a fnml:FunctionMap;		#a fno:Function; # It's not a function! but a functionMap
   rr:datatype xsd:dateTime; # output type -> dateTime
   fnml:functionValue [
@@ -103,6 +118,37 @@
     ]
   ] .
 
+## object to IRI mapper (3303 --> lwm2m:TemperatureObject)
+:ObjectClassIRIFunctionMap a fnml:FunctionMap;
+  #rr:constant lwm2m:ObjectInstance; #Add class ObjectInstance since it doesn't work at rr:class anymore
+  fnml:functionValue [
+    rml:logicalSource :datasource ;
+    rr:predicateObjectMap [
+      rr:predicate fno:executes ;
+      rr:objectMap [ rr:constant <http://functions.com/func#objectClassIRI> ]
+    ],
+    [
+      rr:predicate <inputString> ;
+      rr:objectMap [ rr:reference "object" ];
+    ]
+  ] .
+## resource to IRI mapper (5700 --> lwm2m:SensorValue)
+:ResourceClassIRIFunctionMap a fnml:FunctionMap;
+  fnml:functionValue [
+    rml:logicalSource :datasource ;
+    rr:predicateObjectMap [
+      rr:predicate fno:executes ;
+      rr:objectMap [ rr:constant <http://functions.com/func#resourceClassIRI> ]
+    ],
+    [
+      rr:predicate <inputString> ;
+      rr:objectMap [ rr:reference "$.object" ];
+    ],
+    [
+      rr:predicate <inputString> ;
+      rr:objectMap [ rr:reference "$.resource" ];
+    ]
+  ] .
 
 #### OBSOLETE
 ## Stop thinking functions

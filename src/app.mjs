@@ -1,4 +1,4 @@
-import def from 'retriever.mjs';
+import 'retriever.mjs';
 
 import url from 'url';
 import path from 'path';

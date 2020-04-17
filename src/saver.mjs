@@ -29,10 +29,12 @@ async function solidLogIn() {
 			solidPod.store = store;
 			const fetcher = new $rdf.Fetcher(store);
 			const updater = new $rdf.UpdateManager(store);
+			solidPod.updater = updater;
 
 			// Getting the right document
 			const podData = await getPodData(session.webId);
-			console.log(podData);
+			// Remembering the data
+			solidPod.podData = podData;
 			//updater.addDownstreamChangeListener(doc, fancyFunction);
 			//updater.reloadAndSync(doc);
 		}).catch(err => console.log(`Login error: ${err}`));
@@ -44,16 +46,15 @@ solidLogIn();
 export default function addResourceMeasurement(graph, solidPod) {
 	const tempStore = new $rdf.Formula;
 	//const tempStore = $rdf.graph(); // VERY STRANGE: IndexedFormula doesn't work, but graph() does... They SHOULD be synonym
-	$rdf.parse(graph, tempStore, doc.uri, 'text/turtle');
-	//console.log(tempStore)
-	updater.update(null, tempStore, callbackUpdate);
+	$rdf.parse(graph, tempStore, solidPod.podData.iotDoc.value, 'text/turtle');
+	solidPod.updater.update(null, tempStore, callbackUpdate);
 }
 function callbackUpdate(uri, success, err) {
 	if(success) {
-		console.log("Succes for " + uri + "and the err body is" + err);
+		console.log("Successfully added Resource Measurement in: " + uri);
 	}
 	else {
-		console.log("No succes for" +uri+ "so the err body is " +err);
+		console.log("No succes for " +uri+ " so the err body is " +err);
 	}
 }
 

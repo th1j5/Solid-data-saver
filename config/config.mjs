@@ -21,8 +21,9 @@ const leshanServers = [leshanServer]; //support multiple servers
 
 // RML parameters
 const ontology = 'https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#';
-//const rmlmappingfile = "assets/mapping_uuid.ttl" // RML file - TODO: input file specified in the rml-turtle file is relative to *this* file (won't fix)
-const rmlmappingfile = "../config/mapping_blank_nodes.ttl" // RML file - TODO: input file specified in the rml-turtle file is relative to *this* file (won't fix)
+const skolemization = true; // https://www.w3.org/TR/rdf11-concepts/#section-skolemization
+const rmlmappingfile = "assets/mapping_uuid.ttl"; // RML file - TODO: input file specified in the rml-turtle file is relative to *this* file (won't fix)
+//const rmlmappingfile = "../config/mapping_blank_nodes.ttl" // RML file - TODO: input file specified in the rml-turtle file is relative to *this* file (won't fix)
 const rmloptions = { 
     toRDF: true,
     verbose: false,
@@ -31,4 +32,4 @@ const rmloptions = {
 
 export {LDP, SPACE, SOLID, RDF, SCHEMA};
 export { leshanServers, solidPods };
-export { ontology as lwm2mOnto, rmlmappingfile, rmloptions};
+export { ontology as lwm2mOnto, rmlmappingfile, rmloptions, skolemization};

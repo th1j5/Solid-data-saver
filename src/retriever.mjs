@@ -11,8 +11,9 @@ import fs from 'fs';			// File system to read in the static file
 import $rdf from 'rdflib';      	// Rdf graph manipulation library
 import EventSource from 'eventsource';	// EventSource for Node.js
 import jsonToRDF from './rmlmapper.mjs';// mapping JSON to RDF
+import addResourceMeasurement from './saver.mjs';
 // Program parameters
-import {leshanServers} from '../config/config.js'; // support multiple servers
+import {leshanServers, solidPods} from '../config/config.mjs'; // support multiple servers
 
 leshanServers.forEach( leshanServer => {
 	leshanServer.origin = leshanServer.protocol + '://' + leshanServer.basename;
@@ -25,6 +26,12 @@ leshanServers.forEach( leshanServer => {
  */
 function notificationCallback(msg) {
 	const leshanServer = leshanServers.find( ({origin: o}) => o === msg.origin); // retrieve origin server from list of servers (using destructuring assignement)
+	console.log("Recieved NOTIFICATION from leshanServer: " + leshanServer.rdfBasename);
 	let content = JSON.parse(msg.data);
-	jsonToRDF(content, leshanServer).then(data => {console.log(data)});
+	jsonToRDF(content, leshanServer).then(ntriples => { // json from this particular leshanServer will always have the same RDF, even for differen solidPod targets
+		// for each solidPod connected to this particular leshanServer
+		leshanServer.solidPodTargets.forEach((podN) => {
+			addResourceMeasurement(ntriples, solidPods[podN]);
+		});
+	});
 };
