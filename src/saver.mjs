@@ -11,7 +11,6 @@ import auth from 'solid-auth-cli';	// Solid authorization library for node/comma
 import $rdf from 'rdflib';		// Rdf graph manipulation library
 
 // Program parameters
-const staticfile = "assets/static1.ttl";  // Turtle file with static sensor data
 const database = "https://iotsolidugent.inrupt.net/private/static.ttl"; // Static turtle file stored on solid pod
 const doc = $rdf.sym(database);
 const backupfile = "backup.ttl";

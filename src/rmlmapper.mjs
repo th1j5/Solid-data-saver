@@ -13,7 +13,7 @@ import rml from 'rocketrml'; 	// RML mapper to map JSON --> RDF
 // Program parameters
 const ontology = 'https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#';
 //const rmlmappingfile = "assets/mapping_uuid.ttl" // RML file - TODO: input file specified in the rml-turtle file is relative to *this* file (won't fix)
-const rmlmappingfile = "assets/mapping_blank_nodes.ttl" // RML file - TODO: input file specified in the rml-turtle file is relative to *this* file (won't fix)
+const rmlmappingfile = "../config/mapping_blank_nodes.ttl" // RML file - TODO: input file specified in the rml-turtle file is relative to *this* file (won't fix)
 const protocolLeshanserver = 'http'
 const basenameLeshanserver = 'basisLeshan.com'  // will become {protocol}://{basenameLeshanserver}/
 const rmloptions = {
