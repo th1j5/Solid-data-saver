@@ -9,20 +9,56 @@
 // Importing required libraries
 import fs from 'fs';    	// File system to read in the static file
 import rml from 'rocketrml'; 	// RML mapper to map JSON --> RDF
-
 // Program parameters
-const ontology = 'https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#';
-//const rmlmappingfile = "assets/mapping_uuid.ttl" // RML file - TODO: input file specified in the rml-turtle file is relative to *this* file (won't fix)
-const rmlmappingfile = "../config/mapping_blank_nodes.ttl" // RML file - TODO: input file specified in the rml-turtle file is relative to *this* file (won't fix)
-const protocolLeshanserver = 'http'
-const basenameLeshanserver = 'basisLeshan.com'  // will become {protocol}://{basenameLeshanserver}/
-const rmloptions = {
-    toRDF: true,
-    verbose: false,
-    xmlPerformanceMode: false,
-    replace: false};
+import {lwm2mOnto as ontology, rmlmappingfile, rmloptions} from '../config/config.js';
 
-// RML functions
+/**
+ * Main function:
+ *   input: JSON-object
+ *          leshanserver-object
+ *   ouput: text/n3 (String)
+ */
+export default async function jsonObjectToRDF(leshanJSONdata, lserver={ protocol: 'http', basename: 'localhost:8080', rdfBasename:'defaultLeshan.com'}) {
+	const rml_data_in = preprocessJSON(leshanJSONdata, lserver); //prepare rml_data_in
+	return loadFileToString(rmlmappingfile)
+		.then( async (rmlmapping) => { 
+			return await rml.parseFileLive(rmlmapping, rml_data_in, rmloptions)
+				.catch( (err) => {console.log(err);});
+		});
+}
+
+/**
+ * Preprocessing
+ *   Enrich JSON object with extra data or for easier parsing.
+ */
+function preprocessJSON(leshanJSONdata, lserver) {
+	leshanJSONdata.protocol = lserver.protocol; // choose which protocol the measurement IRI's have
+	leshanJSONdata.domain = lserver.rdfBasename; // choose which basename the measurement IRI's have
+	const objectHierarchy = leshanJSONdata.res.slice(1).split('/'); //remove leading slash & split into numerals
+	leshanJSONdata.object = objectHierarchy[0];
+	leshanJSONdata.objectInstance = objectHierarchy[1];
+	leshanJSONdata.resource = objectHierarchy[2];
+
+	return { 'data.json': JSON.stringify(leshanJSONdata)}; // RML data in
+}
+
+/**
+ * testing RML rocket
+ *
+ */
+const jsonToRDF_test = async () => {
+	const result = await rml.parseFile(rmlmappingfile, rmloutput, rmloptions)
+		.catch((err) => { console.log(err); });
+	console.log(result);
+	loadFileToString(rmlmappingfile).then(async rmlmapping => {
+		const result2 = await rml.parseFileLive(rmlmapping, rml_data_in,rmloptions).catch((err) => {console.log(err); });
+		console.log(result2);
+	});
+};
+
+/**
+ * RML functions
+ */
 rmloptions.functions = {
     'http://functions.com/func#timestamp': () => { return new Date().toISOString(); },
 	// not used function:
@@ -97,50 +133,6 @@ function resourceClassToIRI(data) {
 	}
 	return iri;
 }
-
-/**
- * Main function:
- *   input: JSON-object
- *          leshanserver-object
- *   ouput: text/n3 (String)
- */
-export default async function jsonObjectToRDF(leshanJSONdata, lserver={ protocol: 'http', basename: 'localhost:8080', rdfBasename:'defaultLeshan.com'}) {
-	const rml_data_in = preprocessJSON(leshanJSONdata, lserver); //prepare rml_data_in
-	return loadFileToString(rmlmappingfile)
-		.then( async (rmlmapping) => { 
-			return await rml.parseFileLive(rmlmapping, rml_data_in, rmloptions)
-				.catch( (err) => {console.log(err);});
-		});
-}
-
-/**
- * Preprocessing
- *   Enrich JSON object with extra data or for easier parsing.
- */
-function preprocessJSON(leshanJSONdata, lserver) {
-	leshanJSONdata.protocol = lserver.protocol; // choose which protocol the measurement IRI's have
-	leshanJSONdata.domain = lserver.rdfBasename; // choose which basename the measurement IRI's have
-	const objectHierarchy = leshanJSONdata.res.slice(1).split('/'); //remove leading slash & split into numerals
-	leshanJSONdata.object = objectHierarchy[0];
-	leshanJSONdata.objectInstance = objectHierarchy[1];
-	leshanJSONdata.resource = objectHierarchy[2];
-
-	return { 'data.json': JSON.stringify(leshanJSONdata)}; // RML data in
-}
-
-/**
- * testing RML rocket
- *
- */
-const jsonToRDF_test = async () => {
-	const result = await rml.parseFile(rmlmappingfile, rmloutput, rmloptions)
-		.catch((err) => { console.log(err); });
-	console.log(result);
-	loadFileToString(rmlmappingfile).then(async rmlmapping => {
-		const result2 = await rml.parseFileLive(rmlmapping, rml_data_in,rmloptions).catch((err) => {console.log(err); });
-		console.log(result2);
-	});
-};
 
 /**
  * Function to save file contents into a string (from Flor)

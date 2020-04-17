@@ -11,10 +11,8 @@ import fs from 'fs';			// File system to read in the static file
 import $rdf from 'rdflib';      	// Rdf graph manipulation library
 import EventSource from 'eventsource';	// EventSource for Node.js
 import jsonToRDF from './rmlmapper.mjs';// mapping JSON to RDF
-
 // Program parameters
-const leshanServer = { protocol: 'http', basename: 'localhost:8080', rdfBasename:'basisLeshan.com'}; // will become {protocol}://{basename}/
-const leshanServers = [leshanServer]; //support multiple servers
+import {leshanServers} from '../config/config.js'; // support multiple servers
 
 leshanServers.forEach( leshanServer => {
 	leshanServer.origin = leshanServer.protocol + '://' + leshanServer.basename;

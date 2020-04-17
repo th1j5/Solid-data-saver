@@ -9,40 +9,27 @@
 // Importing required libraries
 import auth from 'solid-auth-cli';	// Solid authorization library for node/command line
 import $rdf from 'rdflib';		// Rdf graph manipulation library
-import {credentials} from '../config/config.mjs'// Namespaces
 
 // Program parameters
 const database = "https://iotsolidugent.inrupt.net/private/static.ttl"; // Static turtle file stored on solid pod
 const doc = $rdf.sym(database);
+const backupfile = "backup.ttl";
+
+// Credentials (UNSAFE AS ALL HELL - Only other option is a json file with this info, which is just as bad.)
+const idp = "https://inrupt.net";
+const username = "iotsolidugent";
+const password = "***REMOVED***";
 
 // Creating rdf lib constructs to be used with solid-auth-cli
 const store = $rdf.graph();
 const fetcher = new $rdf.Fetcher(store);
 const updater = new $rdf.UpdateManager(store);
 
-// Discovering storage
-// inspiration: notepod (with plandoc)
-const webId = 'https://iotsolidugent.inrupt.net/profile/card#me'
-function getPodData() {
-	const profile = store.sym(webId);	// subj
-	const profileDoc = id.doc();		// doc
+// Getting the storage location
 
-	const solidstorage = store.any(profile, SPACE('storage'), null, profileDoc);			// container
-	const privateTypeIndex = store.any(profile, SOLID('privateTypeIndex'), null, profileDoc);	// doc
-
-	//find iotDoc
-	let st1 = new $rdf.Statement($rdf.bnode(), RDF('type'), SOLID('TypeRegistration'), privateTypeIndex);
-	let st2 = new $rdf.Statement($rdf.bnode(), SOLID('forClass'), SCHEMA('TextDigitalDocument'), privateTypeIndex)); // subj
-	//
-	const iotTypeRegistration = store.match(null, RDF('type'), SOLID('TypeRegistration'), privateTypeIndex)
-		.concat(store.match(null, SOLID('forClass'), SCHEMA('TextDigitalDocument'), privateTypeIndex)); // subj
-	if(!iotTypeRegistration) { //is empty --> create one
-	}
-}
-
-// Loging in using solid-auth-cli
+// Logging in using solid-auth-cli
 console.log(`Loggin in...`);
-auth.login(credentials).then(session => {
+auth.login({idp, username, password}).then(session => {
 	console.log(`Logged in as ${session.webId}`);
 	// Using the fetcher to get our graph stored in the solid datapod
 	updater.addDownstreamChangeListener(doc, fancyFunction);
@@ -51,12 +38,13 @@ auth.login(credentials).then(session => {
 
 // graph is a string of n3
 export default function addResourceMeasurement(graph) {
-	const tempStore = new $rdf.Formula;
-	//const tempStore = $rdf.graph(); // VERY STRANGE: IndexedFormula doesn't work, but graph() does... They SHOULD be synonym
+	//const tempStore = $rdf.Formula;
+	const tempStore = $rdf.graph(); // VERY STRANGE: IndexedFormula doesn't work, but graph() does... They SHOULD be synonym
 	$rdf.parse(graph, tempStore, doc.uri, 'text/turtle');
 	//console.log(tempStore)
 	updater.update(null, tempStore, callbackUpdate);
 }
+
 function callbackUpdate(uri, success, err) {
 	if(success) {
 		console.log("Succes for " + uri + "and the err body is" + err);
