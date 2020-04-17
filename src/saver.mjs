@@ -9,28 +9,39 @@
 // Importing required libraries
 import auth from 'solid-auth-cli';	// Solid authorization library for node/command line
 import $rdf from 'rdflib';		// Rdf graph manipulation library
-import {solidPods} from '../config/config.mjs'// Namespaces
+import {solidPods} from '../config/config.mjs'; // Config settings
+import getPodData from './getPodData.mjs';
 
 // Program parameters
 const database = "https://iotsolidugent.inrupt.net/private/static.ttl"; // Static turtle file stored on solid pod
 const doc = $rdf.sym(database);
 
-// Creating rdf lib constructs to be used with solid-auth-cli
-const store = $rdf.graph();
-const fetcher = new $rdf.Fetcher(store);
-const updater = new $rdf.UpdateManager(store);
 
 // Loging in using solid-auth-cli
-console.log(`Loggin in...`);
-auth.login(solidPods[0]).then(session => { // TODO: sign in for each solid pod
-	console.log(`Logged in as ${session.webId}`);
-	// Using the fetcher to get our graph stored in the solid datapod
-	updater.addDownstreamChangeListener(doc, fancyFunction);
-	updater.reloadAndSync(doc);
-}).catch(err => console.log(`Login error: ${err}`));
+async function solidLogIn() {
+	console.log(`Logging in...`);
+	solidPods.forEach( solidPod => {
+		auth.login(solidPod).then(async session => { // TODO: sign in for each solid pod
+			console.log(`Logged in as ${session.webId}`);
+
+			// Creating rdf lib constructs to be used with solid-auth-cli
+			const store = $rdf.graph();
+			solidPod.store = store;
+			const fetcher = new $rdf.Fetcher(store);
+			const updater = new $rdf.UpdateManager(store);
+
+			// Getting the right document
+			const podData = await getPodData(session.webId);
+			console.log(podData);
+			//updater.addDownstreamChangeListener(doc, fancyFunction);
+			//updater.reloadAndSync(doc);
+		}).catch(err => console.log(`Login error: ${err}`));
+	});
+}
+solidLogIn();
 
 // graph is a string of n3
-export default function addResourceMeasurement(graph) {
+export default function addResourceMeasurement(graph, solidPod) {
 	const tempStore = new $rdf.Formula;
 	//const tempStore = $rdf.graph(); // VERY STRANGE: IndexedFormula doesn't work, but graph() does... They SHOULD be synonym
 	$rdf.parse(graph, tempStore, doc.uri, 'text/turtle');
