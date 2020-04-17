@@ -7,12 +7,16 @@ const RDF = new $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 const SCHEMA = new $rdf.Namespace('http://schema.org/');
 
 // Credentials (UNSAFE AS ALL HELL - Only other option is a json file with this info, which is just as bad.)
-const idp = "https://inrupt.net";
-const username = "iotsolidugent";
-const password = "***REMOVED***";
+const solidPod = {
+	idp : "https://inrupt.net",
+	username : "iotsolidugent",
+	password : "***REMOVED***",
+}
+const solidPods = [solidPod]
 
 // Leshan servers
-const leshanServer = { protocol: 'http', basename: 'localhost:8080', rdfBasename:'basisLeshan.com'}; // will become {protocol}://{basename}/
+const leshanServer = { protocol: 'http', basename: 'localhost:8080', rdfBasename:'basisLeshan.com', // will become {protocol}://{basename}/
+	solidPodTargets: [0]}; // indices of solidPod which will recieve data from this server
 const leshanServers = [leshanServer]; //support multiple servers
 
 // RML parameters
@@ -26,6 +30,5 @@ const rmloptions = {
     replace: false};
 
 export {LDP, SPACE, SOLID, RDF, SCHEMA};
-export const credentials = {idp, username, password};
-export { leshanServers };
+export { leshanServers, solidPods };
 export { ontology as lwm2mOnto, rmlmappingfile, rmloptions};

@@ -9,40 +9,58 @@
 // Importing required libraries
 import auth from 'solid-auth-cli';	// Solid authorization library for node/command line
 import $rdf from 'rdflib';		// Rdf graph manipulation library
-
-// Program parameters
-const database = "https://iotsolidugent.inrupt.net/private/static.ttl"; // Static turtle file stored on solid pod
-const doc = $rdf.sym(database);
-const backupfile = "backup.ttl";
-
-// Credentials (UNSAFE AS ALL HELL - Only other option is a json file with this info, which is just as bad.)
-const idp = "https://inrupt.net";
-const username = "iotsolidugent";
-const password = "***REMOVED***";
+import {RDF, SOLID, SPACE, SCHEMA} from '../config/config.mjs'; //Namespaces
 
 // Creating rdf lib constructs to be used with solid-auth-cli
 const store = $rdf.graph();
-const fetcher = new $rdf.Fetcher(store);
 const updater = new $rdf.UpdateManager(store);
 
-// Getting the storage location
+// Discovering the storage location for our IoT Document
+// inspiration: notepod (with plandoc)
+export default async function getPodData(webId) {
+	const profile = store.sym(webId);	// subj
+	const profileDoc = profile.doc();	// doc
 
-// Logging in using solid-auth-cli
-console.log(`Loggin in...`);
-auth.login({idp, username, password}).then(session => {
-	console.log(`Logged in as ${session.webId}`);
-	// Using the fetcher to get our graph stored in the solid datapod
-	updater.addDownstreamChangeListener(doc, fancyFunction);
-	updater.reloadAndSync(doc);
-}).catch(err => console.log(`Login error: ${err}`));
+	updater.reloadAndSync(profileDoc); // does this work?
+	const delay = ms => new Promise(res => setTimeout(res, ms));
+	await delay(3000);
 
-// graph is a string of n3
-export default function addResourceMeasurement(graph) {
-	//const tempStore = $rdf.Formula;
-	const tempStore = $rdf.graph(); // VERY STRANGE: IndexedFormula doesn't work, but graph() does... They SHOULD be synonym
-	$rdf.parse(graph, tempStore, doc.uri, 'text/turtle');
-	//console.log(tempStore)
-	updater.update(null, tempStore, callbackUpdate);
+	const solidstorage = store.any(profile, SPACE('storage'), null, profileDoc);			// container
+	const privateTypeIndex = store.any(profile, SOLID('privateTypeIndex'), null, profileDoc);	// doc
+
+	updater.reloadAndSync(privateTypeIndex); // does this work?
+	await delay(3000);
+
+	//find iotDoc
+	const newBlankNode = new $rdf.BlankNode;
+	let st1 = new $rdf.Statement(newBlankNode, RDF('type'), SOLID('TypeRegistration'), privateTypeIndex);
+	let st2 = new $rdf.Statement(newBlankNode, SOLID('forClass'), SCHEMA('TextDigitalDocument'), privateTypeIndex); // subj
+	//
+	const matchingSubjects1 = store.match(null, st1.predicate, st1.object, st1.graph).map( quad => quad.subject); // list of subj
+	const matchingSubjects2 = store.match(null, st2.predicate, st2.object, st2.graph).map( quad => quad.subject); // list of subj
+	const iotTypeRegistration = matchingSubjects1.find( (subj) => { return matchingSubjects2.includes(subj);}); // compare 2 arrays and return first subject found in both	 
+
+	if(!iotTypeRegistration) { //is empty --> create one
+		updater.update(null, [st1, st2])
+		.then((ok) => {console.log('updated: ' + ok)}, (err) => {console.log('error while updating: ' + err)});
+		iotTypeRegistration = newBlankNode; // should be?
+	}
+	//console.log(iotTypeRegistration);
+	//console.log($rdf.serialize(null, store, "exam.com/", 'text/turtle'));
+	//const iotDoc =  // doc
+	const iotDoc = store.any(iotTypeRegistration, SOLID('instance'), null, privateTypeIndex); // doc
+	if(!iotDoc) { // Create new iotDoc
+		solidstorage.value += "private/leshandata.ttl";
+		console.log("Creating new IoT document for Leshan measurement data on " + solidstorage.value);
+		await updater.put(solidstorage, "", 'text/turtle', (uri, ok, err, resp) => { if(err) console.log('error occured during creation of doc ' + err);});
+	}
+	console.log("Found IoT Document on " + iotDoc);
+	return {
+		webId,
+		profileDoc,
+		privateTypeIndex,
+		iotDoc
+	}
 }
 
 function callbackUpdate(uri, success, err) {

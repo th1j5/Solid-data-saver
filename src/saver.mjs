@@ -9,7 +9,7 @@
 // Importing required libraries
 import auth from 'solid-auth-cli';	// Solid authorization library for node/command line
 import $rdf from 'rdflib';		// Rdf graph manipulation library
-import {credentials} from '../config/config.mjs'// Namespaces
+import {solidPods} from '../config/config.mjs'// Namespaces
 
 // Program parameters
 const database = "https://iotsolidugent.inrupt.net/private/static.ttl"; // Static turtle file stored on solid pod
@@ -20,29 +20,9 @@ const store = $rdf.graph();
 const fetcher = new $rdf.Fetcher(store);
 const updater = new $rdf.UpdateManager(store);
 
-// Discovering storage
-// inspiration: notepod (with plandoc)
-const webId = 'https://iotsolidugent.inrupt.net/profile/card#me'
-function getPodData() {
-	const profile = store.sym(webId);	// subj
-	const profileDoc = id.doc();		// doc
-
-	const solidstorage = store.any(profile, SPACE('storage'), null, profileDoc);			// container
-	const privateTypeIndex = store.any(profile, SOLID('privateTypeIndex'), null, profileDoc);	// doc
-
-	//find iotDoc
-	let st1 = new $rdf.Statement($rdf.bnode(), RDF('type'), SOLID('TypeRegistration'), privateTypeIndex);
-	let st2 = new $rdf.Statement($rdf.bnode(), SOLID('forClass'), SCHEMA('TextDigitalDocument'), privateTypeIndex)); // subj
-	//
-	const iotTypeRegistration = store.match(null, RDF('type'), SOLID('TypeRegistration'), privateTypeIndex)
-		.concat(store.match(null, SOLID('forClass'), SCHEMA('TextDigitalDocument'), privateTypeIndex)); // subj
-	if(!iotTypeRegistration) { //is empty --> create one
-	}
-}
-
 // Loging in using solid-auth-cli
 console.log(`Loggin in...`);
-auth.login(credentials).then(session => {
+auth.login(solidPods[0]).then(session => { // TODO: sign in for each solid pod
 	console.log(`Logged in as ${session.webId}`);
 	// Using the fetcher to get our graph stored in the solid datapod
 	updater.addDownstreamChangeListener(doc, fancyFunction);
