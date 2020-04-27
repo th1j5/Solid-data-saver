@@ -77,5 +77,13 @@ n0:0
 	//console.log($rdf.serialize(null, store, 'http://exam.com', 'application/n-triples'))
 }
 
+function test_object_mapping() {
+	jsonToRDF(leshanJSONdata).then(data => {
+		$rdf.parse(data, store, 'http://ex.com', 'text/turtle');
+		console.log($rdf.serialize(null, store, 'http://exam.com', 'text/turtle'))
+	});
+}
+
 //testing1()
-testing0()
+//testing0()
+test_object_mapping()

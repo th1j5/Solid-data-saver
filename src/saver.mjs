@@ -27,7 +27,6 @@ async function solidLogIn() {
 			// Creating rdf lib constructs to be used with solid-auth-cli
 			const store = $rdf.graph();
 			solidPod.store = store;
-			const fetcher = new $rdf.Fetcher(store);
 			const updater = new $rdf.UpdateManager(store);
 			solidPod.updater = updater;
 

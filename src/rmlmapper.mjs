@@ -10,6 +10,7 @@
 import fs from 'fs';    	// File system to read in the static file
 import rml from 'rocketrml'; 	// RML mapper to map JSON --> RDF
 import uuid from 'uuid'; // Random ID generator
+import rdfstore from 'rdfstore'; // Different lib from rdflib.js to do SPARQL queries - used for objectClassToIRI and such
 // Program parameters
 import {lwm2mOnto as ontology, rmlmappingfile, rmloptions, skolemization} from '../config/config.mjs';
 
@@ -67,7 +68,7 @@ const jsonToRDF_test = async () => {
 rmloptions.functions = {
     'http://functions.com/func#timestamp': () => { return new Date().toISOString(); },
 	// not used function:
-    'http://functions.com/func#objectClassIRI': objectClassToIRI,
+    'http://functions.com/func#objectClassIRI': objectClassToIRI2,
     'http://functions.com/func#resourceClassIRI': resourceClassToIRI,
     'http://functions.com/func#objectInstance': data => { 
 	    const objectInst = data[1].match(/\/\d{1,}\/\d{1,}/); // regexp to match /3303/0 of string /3303/0/5700
@@ -97,6 +98,12 @@ function objectClassToIRI(data) {
 			break;
 	}
 	return iri;
+}
+function objectClassToIRI2(data) {
+	console.log("Warning: using an 'in development' function");
+	const obj = data[0];
+	let iri = ontology;
+	return iri += 'LWM2MTemperatureObject';
 }
 /**
  * Function to map resourceNumber --> resourceClass
