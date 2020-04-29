@@ -1,6 +1,9 @@
 import { registerEventListeners } from './leshanEventRetriever.mjs';
 import { loadOntology } from './ontologySearcher.mjs';
 import { solidLogIn } from './solidPodSaver.mjs';
+import rootlogger from 'loglevel'; // logging
+
+const log = rootlogger;
 
 startTranslationLayer()
 
@@ -11,7 +14,7 @@ async function startTranslationLayer() {
 		await Promise.all([solidLogIn(), loadOntology()]);
 	}
 	catch {
-		console.err('For some reason we could not log in in Solid or download the Ontology');
+		log.error('For some reason we could not log in in Solid or download the Ontology');
 	}
 	registerEventListeners();	// Then register an EventListener to catch all outging Events from the Leshan server
 }

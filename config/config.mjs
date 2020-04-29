@@ -1,4 +1,7 @@
 import $rdf from 'rdflib';              // Rdf graph manipulation library
+import rootlogger from 'loglevel';
+// Set default loglevel
+rootlogger.setDefaultLevel(rootlogger.levels.DEBUG);
 // Namespaces
 const LDP = new $rdf.Namespace('https://www.w3.org/ns/ldp#');
 const SPACE = new $rdf.Namespace('http://www.w3.org/ns/pim/space#');

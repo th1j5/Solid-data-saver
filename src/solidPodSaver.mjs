@@ -9,6 +9,7 @@
 // Importing required libraries
 import auth from 'solid-auth-cli';	// Solid authorization library for node/command line
 import $rdf from 'rdflib';		// Rdf graph manipulation library
+import rootlogger from 'loglevel';
 import {solidPods} from '../config/config.mjs'; // Config settings
 import getPodData from './getPodData.mjs';
 
@@ -17,12 +18,14 @@ import getPodData from './getPodData.mjs';
  */
 export { solidLogIn };
 
+const log = rootlogger.getLogger('solidPodSaver');
+
 // Logging in using solid-auth-cli
 async function solidLogIn() {
-	console.log(`Logging in...`);
+	log.info(`Logging in...`);
 	for (const solidPod of solidPods) {
 		await auth.login(solidPod).then(async session => { // TODO: sign in for each solid pod
-			console.log(`Logged in as ${session.webId}`);
+			log.info(`Logged in as ${session.webId}`);
 
 			// Creating rdf lib constructs to be used with solid-auth-cli
 			const store = $rdf.graph();
@@ -34,7 +37,7 @@ async function solidLogIn() {
 			solidPod.podData = podData;
 			solidPod.store = store;
 			solidPod.updater = updater;
-		}).catch(err => console.log(`Login error: ${err}`));
+		}).catch(err => log.error(`Login error: ${err}`));
 	}
 	return;
 }
@@ -48,9 +51,9 @@ export default function addResourceMeasurement(graph, solidPod) {
 }
 function callbackUpdate(uri, success, err) {
 	if(success) {
-		console.log("Successfully added Resource Measurement in: " + uri);
+		log.info("Successfully added Resource Measurement in: " + uri);
 	}
 	else {
-		console.log("No succes for " +uri+ " so the err body is " +err);
+		log.erro("No succes for " +uri+ " so the err body is " +err);
 	}
 }

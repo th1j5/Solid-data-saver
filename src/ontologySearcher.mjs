@@ -9,6 +9,7 @@
 // Importing required libraries
 import util from 'util';
 import rdfstore from 'rdfstore'; // Different lib from rdflib.js to do SPARQL queries - used for objectClassToIRI and such
+import rootlogger from 'loglevel';
 // Program parameters
 import {lwm2mOnto as ontology} from '../config/config.mjs';
 
@@ -17,6 +18,7 @@ export { loadOntology_promise as loadOntology, objectClassToIRI_exp as objectCla
 
 // Promisify (turning a function with a callback into a function returning a promise)
 const createStore = util.promisify(rdfstore.create);
+const log = rootlogger.getLogger('ontologySearcher');
 let ontStore; // contains ontology store
 // Using an arrow function to return a template literal (notice the absence of {})
 // objNum is a string
@@ -47,21 +49,22 @@ const queryObjectClass = (objNum) => `
  */
 async function loadOntology_promise() {
 	ontStore = await createStore();		// First create store and wait for it
+	log.debug('ontology store created')
 	return new Promise( (resolve, reject) => {	// Then load ontology into it, returning a promise. Resolve(ans) is a number of how many elements are loaded.
 		ontStore.load('remote', ontology, (err, ans) => {
 			if(err) reject(err);
-			else resolve(ans);
+			else log.info('Ontology loaded to search in'); resolve(ans);
 		});
 	});
 }
 
 // Can be an async function, because RMLRocket supports this since v1.7.0
 function objectClassToIRI_exp(data) {
-	console.log("Warning: using an 'in development' function");
+	log.warn("Warning: using an 'in development' function");
 	const obj = data[0];
 	let iri = ontology;
-	console.log(queryObjectClass(obj));
-	ontStore.execute(queryObjectClass(obj), (err, resp) => {console.log('This is the response', resp)});
+	log.debug(queryObjectClass(obj));
+	ontStore.execute(queryObjectClass(obj), (err, resp) => {log.debug('This is the response', resp)});
 	return iri += 'ThisisAnExperimentalObject';
 }
 

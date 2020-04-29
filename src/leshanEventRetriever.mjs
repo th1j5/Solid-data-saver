@@ -10,11 +10,13 @@
 import fs from 'fs';			// File system to read in the static file
 import $rdf from 'rdflib';      	// Rdf graph manipulation library
 import EventSource from 'eventsource';	// EventSource for Node.js
+import rootlogger from 'loglevel';
 import jsonToRDF from './rmlmapper.mjs';// mapping JSON to RDF
 import addResourceMeasurement from './solidPodSaver.mjs';
 // Program parameters
 import {leshanServers, solidPods} from '../config/config.mjs'; // support multiple servers
 
+const log = rootlogger.getLogger('leshanEventRetriever');
 
 /**
  * Register for every leshanServer an eventListener
@@ -33,7 +35,7 @@ export function registerEventListeners() {
  */
 function notificationCallback(msg) {
 	const leshanServer = leshanServers.find( ({origin: o}) => o === msg.origin); // retrieve origin server from list of servers (using destructuring assignement)
-	console.log("Recieved NOTIFICATION from leshanServer: " + leshanServer.rdfBasename);
+	log.info("Recieved NOTIFICATION from leshanServer: " + leshanServer.rdfBasename);
 	let content = JSON.parse(msg.data);
 	jsonToRDF(content, leshanServer).then(ntriples => { // json from this particular leshanServer will always have the same RDF, even for differen solidPod targets
 		// for each solidPod connected to this particular leshanServer

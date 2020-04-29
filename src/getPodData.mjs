@@ -9,12 +9,14 @@
 // Importing required libraries
 import auth from 'solid-auth-cli';	// Solid authorization library for node/command line
 import $rdf from 'rdflib';		// Rdf graph manipulation library
+import rootlogger from 'loglevel';
 import {RDF, SOLID, SPACE, SCHEMA} from '../config/config.mjs'; //Namespaces
 
 // Creating rdf lib constructs to be used with solid-auth-cli
 const store = $rdf.graph();
 const fetcher = new $rdf.Fetcher(store);
 const updater = new $rdf.UpdateManager(store);
+const log = rootlogger.getLogger('getPodData');
 
 // Discovering the storage location for our IoT Document
 // inspiration: notepod (with plandoc)
@@ -22,13 +24,13 @@ export default async function getPodData(webId) {
 	const profile = store.sym(webId);	// subj
 	const profileDoc = profile.doc();	// doc
 
-	await fetcher.load(profileDoc).catch((err) => {console.log("Error while fetching profileDoc: "+profileDoc + err)});
-	console.log("Found profile document: " + profileDoc);
+	await fetcher.load(profileDoc).catch((err) => {log.error("Error while fetching profileDoc: "+profileDoc + err)});
+	log.info("Found profile document: " + profileDoc);
 	const solidstorage = store.any(profile, SPACE('storage'), null, profileDoc);			// container
 	const privateTypeIndex = store.any(profile, SOLID('privateTypeIndex'), null, profileDoc);	// doc
 
-	await fetcher.load(privateTypeIndex).catch((err) => {console.log("Error while fetching privateTypeIndex: "+privateTypeIndex + err)});
-	console.log("Found privateTypeIndex: " + privateTypeIndex);
+	await fetcher.load(privateTypeIndex).catch((err) => {log.error("Error while fetching privateTypeIndex: "+privateTypeIndex + err)});
+	log.info("Found privateTypeIndex: " + privateTypeIndex);
 	//find iotDoc
 	const newBlankNode = new $rdf.BlankNode;
 	const st1 = new $rdf.Statement(newBlankNode, RDF('type'), SOLID('TypeRegistration'), privateTypeIndex);
@@ -39,22 +41,22 @@ export default async function getPodData(webId) {
 	let iotTypeRegistration = matchingSubjects1.find( (subj) => { return matchingSubjects2.includes(subj);}); // compare 2 arrays and return first subject found in both
 
 	if(!iotTypeRegistration) { //is empty --> create one
-		console.log("Did not found an iotTypeRegistration, making one...");
+		log.info("Did not found an iotTypeRegistration, making one...");
 		updater.update(null, [st1, st2])
-		.then((ok) => {console.log('updated: ' + ok)}, (err) => {console.log('error while updating: ' + err)});
+		.then((ok) => {log.info('updated: ' + ok)}, (err) => {log.erro('error while updating: ' + err)});
 		iotTypeRegistration = newBlankNode; // should be?
 	}
 	solidstorage.value += "private/leshandata.ttl";
 	const st3 = new $rdf.Statement(iotTypeRegistration, SOLID('instance'), solidstorage, privateTypeIndex);
 	let iotDoc = store.any(st3.subject, st3.predicate, null, st3.graph); // doc
 	if(!iotDoc) { // Create new iotDoc
-		console.log("Creating new IoT document for Leshan measurement data on " + solidstorage.value);
+		log.info("Creating new IoT document for Leshan measurement data on " + solidstorage.value);
 		updater.update(null, [st3])
-		.then(() => {console.log('updated privateTypeIndex')}, (err) => {console.log('error while updating privateTypeIndex: ' + err)});
-		await updater.put(solidstorage, "", 'text/turtle', (uri, ok, err, resp) => { if(err) console.log('error occured during creation of doc ' + err);});
+		.then(() => {log.info('updated privateTypeIndex')}, (err) => {log.error('error while updating privateTypeIndex: ' + err)});
+		await updater.put(solidstorage, "", 'text/turtle', (uri, ok, err, resp) => { if(err) log.error('error occured during creation of doc ' + err);});
 		iotDoc = solidstorage.value;
 	}
-	console.log("Found IoT Document on " + iotDoc);
+	log.info("Found IoT Document on " + iotDoc);
 
 	return {
 		webId,

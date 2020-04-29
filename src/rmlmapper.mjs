@@ -10,9 +10,12 @@
 import fs from 'fs';    	// File system to read in the static file
 import rml from 'rocketrml'; 	// RML mapper to map JSON --> RDF
 import uuid from 'uuid'; // Random ID generator
+import rootlogger from 'loglevel';
 import { objectClassToIRI, resourceClassToIRI } from './ontologySearcher.mjs';
 // Program parameters
 import {lwm2mOnto as ontology, rmlmappingfile, rmloptions, skolemization} from '../config/config.mjs';
+
+const log = rootlogger.getLogger('rmlmapper');
 
 /**
  * Main function:
@@ -25,7 +28,7 @@ export default async function jsonObjectToRDF(leshanJSONdata, lserver={ protocol
 	return loadFileToString(rmlmappingfile)
 		.then( async (rmlmapping) => { 
 			return await rml.parseFileLive(rmlmapping, rml_data_in, rmloptions)
-				.catch( (err) => {console.log(err);});
+				.catch( (err) => {log.error(err);});
 		});
 }
 
@@ -58,7 +61,7 @@ rmloptions.functions = {
     'http://functions.com/func#resourceClassIRI': resourceClassToIRI,
     'http://functions.com/func#objectInstance': data => { 
 	    const objectInst = data[1].match(/\/\d{1,}\/\d{1,}/); // regexp to match /3303/0 of string /3303/0/5700
-	    console.log(data[1]);
+	    log.debug(data[1]);
 	    return basenameLeshanserver + data[0] + objectInst[0]; },
 };
 
