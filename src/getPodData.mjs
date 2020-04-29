@@ -63,17 +63,3 @@ export default async function getPodData(webId) {
 		iotDoc
 	}
 }
-
-function callbackUpdate(uri, success, err) {
-	if(success) {
-		console.log("Succes for " + uri + "and the err body is" + err);
-	}
-	else {
-		console.log("No succes for" +uri+ "so the err body is " +err);
-	}
-}
-
-async function fancyFunction() {
-	console.log("addDownstreamChangeListener has callbacked");
-	//console.log($rdf.serialize(doc, store, 'http://exam.com', 'text/turtle'));
-}
