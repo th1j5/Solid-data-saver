@@ -7,15 +7,34 @@
  */
 
 // Importing required libraries
+import util from 'util';
 import rdfstore from 'rdfstore'; // Different lib from rdflib.js to do SPARQL queries - used for objectClassToIRI and such
 // Program parameters
 import {lwm2mOnto as ontology} from '../config/config.mjs';
 
 // Export required functions
-export { loadOntology, objectClassToIRI_hardcoded as objectClassToIRI, resourceClassToIRI_hardcoded as resourceClassToIRI };
+export { loadOntology_promise as loadOntology, objectClassToIRI_exp as objectClassToIRI, resourceClassToIRI_hardcoded as resourceClassToIRI };
 
+// Promisify (turning a function with a callback into a function returning a promise)
+const createStore = util.promisify(rdfstore.create);
 let ontStore; // contains ontology store
-let ontStoreLoaded; // boolean to indicate it is loaded
+// Using an arrow function to return a template literal (notice the absence of {})
+// objNum is a string
+const queryObjectClass = (objNum) => `
+        PREFIX lwm2m: <${ontology}>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        SELECT ?objectName
+        WHERE
+                {
+                        ?objectName rdfs:subClassOf ?blank .
+                        ?blank owl:onProperty lwm2m:hasObjectID ;
+                                owl:hasValue "${objNum}"^^xsd:integer .
+                }
+        `;
+
 
 /**
  * The main program has to call loadOntology() to make the ontology load
@@ -24,32 +43,26 @@ let ontStoreLoaded; // boolean to indicate it is loaded
 /**
  * OWL Ontology loading
  *
- * Really bad loading structure, we can't do something async to wait for our store to load
+ * Loading structure better than before, returning a Promise while loading
  */
-function loadOntology() {
-	rdfstore.create( (err, store) => { // create store
-		if(err) console.log("Error creating store for ontology");
-		store.load('remote', ontology, (err, ans) => { // load ontology
-			if(err) console.log("Error loading ontology");
-			console.log(ans);
-			console.log("LOADED STORE")
-			ontStoreLoaded = true;
+async function loadOntology_promise() {
+	ontStore = await createStore();		// First create store and wait for it
+	return new Promise( (resolve, reject) => {	// Then load ontology into it, returning a promise. Resolve(ans) is a number of how many elements are loaded.
+		ontStore.load('remote', ontology, (err, ans) => {
+			if(err) reject(err);
+			else resolve(ans);
 		});
-		ontStore = store; // remember store
 	});
 }
-/**
- * Helper function to wait for store to be loaded
- */
-function waitForOntology() {
-	// NOT POSSIBLE: (because it cannot be an async function)
-	// https://stackoverflow.com/a/56216283
-	// or could use util.promisify - https://nodejs.org/api/timers.html#timers_settimeout_callback_delay_args
-	//while(!ontStoreLoaded) {
-	//	await new Promise(resolve => setTimeout(resolve, 1000));
-	//}
-	//if(!ontStoreLoaded) { setTimeout(waitForOntology, 500) };
-	//else console.log("LOADED");
+
+// Can be an async function, because RMLRocket supports this since v1.7.0
+function objectClassToIRI_exp(data) {
+	console.log("Warning: using an 'in development' function");
+	const obj = data[0];
+	let iri = ontology;
+	console.log(queryObjectClass(obj));
+	ontStore.execute(queryObjectClass(obj), (err, resp) => {console.log('This is the response', resp)});
+	return iri += 'ThisisAnExperimentalObject';
 }
 
 /**
@@ -75,15 +88,6 @@ function objectClassToIRI_hardcoded(data) {
 			break;
 	}
 	return iri;
-}
-// Cannot be a async function, because RMLRocket doesn't support this
-function objectClassToIRI_exp(data) {
-	console.log("Warning: using an 'in development' function");
-	const obj = data[0];
-	let iri = ontology;
-	const test = waitForOntology();
-	console.log(`Test is: ${test}`);
-	return iri += 'LWM2MTemperatureObject';
 }
 /**
  * Function to map resourceNumber --> resourceClass

@@ -21,23 +21,22 @@ export { solidLogIn };
 async function solidLogIn() {
 	console.log(`Logging in...`);
 	for (const solidPod of solidPods) {
-		auth.login(solidPod).then(async session => { // TODO: sign in for each solid pod
+		await auth.login(solidPod).then(async session => { // TODO: sign in for each solid pod
 			console.log(`Logged in as ${session.webId}`);
 
 			// Creating rdf lib constructs to be used with solid-auth-cli
 			const store = $rdf.graph();
-			solidPod.store = store;
 			const updater = new $rdf.UpdateManager(store);
-			solidPod.updater = updater;
-
 			// Getting the right document
 			const podData = await getPodData(session.webId);
+
 			// Remembering the data
 			solidPod.podData = podData;
-			//updater.addDownstreamChangeListener(podData.iotDoc, fancyFunction);
-			//updater.reloadAndSync(podData.iotDoc);
+			solidPod.store = store;
+			solidPod.updater = updater;
 		}).catch(err => console.log(`Login error: ${err}`));
 	}
+	return;
 }
 
 // graph is a string of n3
