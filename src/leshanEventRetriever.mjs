@@ -27,7 +27,21 @@ export function registerEventListeners() {
 		leshanServer.origin = leshanServer.protocol + '://' + leshanServer.basename;
 		const eventsource = new EventSource(leshanServer.origin + '/event');
 		eventsource.addEventListener('NOTIFICATION', notificationCallback, false);
+		eventsource.addEventListener('COAPLOG', coapCallback, false);
 	});
+}
+
+/**
+ * COAPLOG
+ */
+function coapCallback(msg) {
+	const content = JSON.parse(msg.data)
+	console.log(content);
+	console.log(msg.data);
+	// https://github.com/mcollina/coap-packet
+	// to easily parse CoAP protocol? No, not needed anymore
+	// https://github.com/sywide/senml-js
+	// to easily parse SenML protocol?
 }
 
 /**
@@ -37,6 +51,7 @@ function notificationCallback(msg) {
 	const leshanServer = leshanServers.find( ({origin: o}) => o === msg.origin); // retrieve origin server from list of servers (using destructuring assignement)
 	log.info("Recieved NOTIFICATION from leshanServer: " + leshanServer.rdfBasename);
 	let content = JSON.parse(msg.data);
+	return;
 	jsonToRDF(content, leshanServer).then(ntriples => { // json from this particular leshanServer will always have the same RDF, even for differen solidPod targets
 		log.debug('These are the ntriples in notificationCallback: ' + ntriples);
 		// for each solidPod connected to this particular leshanServer
