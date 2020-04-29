@@ -12,15 +12,14 @@ import rdfstore from 'rdfstore'; // Different lib from rdflib.js to do SPARQL qu
 import {lwm2mOnto as ontology} from '../config/config.mjs';
 
 // Export required functions
-export { objectClassToIRI_hardcoded as objectClassToIRI, resourceClassToIRI_hardcoded as resourceClassToIRI };
+export { loadOntology, objectClassToIRI_hardcoded as objectClassToIRI, resourceClassToIRI_hardcoded as resourceClassToIRI };
 
 let ontStore; // contains ontology store
 let ontStoreLoaded; // boolean to indicate it is loaded
 
 /**
- * Side effect
+ * The main program has to call loadOntology() to make the ontology load
  */
-loadOntology()
 
 /**
  * OWL Ontology loading

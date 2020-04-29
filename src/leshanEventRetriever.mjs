@@ -11,15 +11,22 @@ import fs from 'fs';			// File system to read in the static file
 import $rdf from 'rdflib';      	// Rdf graph manipulation library
 import EventSource from 'eventsource';	// EventSource for Node.js
 import jsonToRDF from './rmlmapper.mjs';// mapping JSON to RDF
-import addResourceMeasurement from './saver.mjs';
+import addResourceMeasurement from './solidPodSaver.mjs';
 // Program parameters
 import {leshanServers, solidPods} from '../config/config.mjs'; // support multiple servers
 
-leshanServers.forEach( leshanServer => {
-	leshanServer.origin = leshanServer.protocol + '://' + leshanServer.basename;
-	const eventsource = new EventSource(leshanServer.origin + '/event');
-	eventsource.addEventListener('NOTIFICATION', notificationCallback, false);
-});
+
+/**
+ * Register for every leshanServer an eventListener
+ * Should be called at startup
+ */
+export function registerEventListeners() {
+	leshanServers.forEach( leshanServer => {
+		leshanServer.origin = leshanServer.protocol + '://' + leshanServer.basename;
+		const eventsource = new EventSource(leshanServer.origin + '/event');
+		eventsource.addEventListener('NOTIFICATION', notificationCallback, false);
+	});
+}
 
 /**
  * Function that processes all NOTIFICATIONs

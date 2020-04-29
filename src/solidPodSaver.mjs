@@ -12,15 +12,15 @@ import $rdf from 'rdflib';		// Rdf graph manipulation library
 import {solidPods} from '../config/config.mjs'; // Config settings
 import getPodData from './getPodData.mjs';
 
-// Program parameters
-const database = "https://iotsolidugent.inrupt.net/private/static.ttl"; // Static turtle file stored on solid pod
-const doc = $rdf.sym(database);
+/**
+ * Main program has to call solidLogIn() to log in to our pods
+ */
+export { solidLogIn };
 
-
-// Loging in using solid-auth-cli
+// Logging in using solid-auth-cli
 async function solidLogIn() {
 	console.log(`Logging in...`);
-	solidPods.forEach( solidPod => {
+	for (const solidPod of solidPods) {
 		auth.login(solidPod).then(async session => { // TODO: sign in for each solid pod
 			console.log(`Logged in as ${session.webId}`);
 
@@ -34,17 +34,16 @@ async function solidLogIn() {
 			const podData = await getPodData(session.webId);
 			// Remembering the data
 			solidPod.podData = podData;
-			//updater.addDownstreamChangeListener(doc, fancyFunction);
-			//updater.reloadAndSync(doc);
+			//updater.addDownstreamChangeListener(podData.iotDoc, fancyFunction);
+			//updater.reloadAndSync(podData.iotDoc);
 		}).catch(err => console.log(`Login error: ${err}`));
-	});
+	}
 }
-solidLogIn();
 
 // graph is a string of n3
 export default function addResourceMeasurement(graph, solidPod) {
 	const tempStore = new $rdf.Formula;
-	//const tempStore = $rdf.graph(); // VERY STRANGE: IndexedFormula doesn't work, but graph() does... They SHOULD be synonym
+	//const tempStore = $rdf.graph();
 	$rdf.parse(graph, tempStore, solidPod.podData.iotDoc.value, 'text/n3');
 	solidPod.updater.update(null, tempStore, callbackUpdate);
 }
@@ -55,9 +54,4 @@ function callbackUpdate(uri, success, err) {
 	else {
 		console.log("No succes for " +uri+ " so the err body is " +err);
 	}
-}
-
-async function fancyFunction() {
-	console.log("addDownstreamChangeListener has callbacked");
-	//console.log($rdf.serialize(doc, store, 'http://exam.com', 'text/turtle'));
 }
