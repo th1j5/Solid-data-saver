@@ -24,39 +24,69 @@ export default async function getPodData(webId) {
 	const profile = store.sym(webId);	// subj
 	const profileDoc = profile.doc();	// doc
 
+	// Load profile doc
 	await fetcher.load(profileDoc).catch((err) => {log.error("Error while fetching profileDoc: "+profileDoc + err)});
 	log.info("Found profile document: " + profileDoc);
 	const solidstorage = store.any(profile, SPACE('storage'), null, profileDoc);			// container
+	solidstorage.value += "private/leshandata.ttl"; // make default storage path
 	const privateTypeIndex = store.any(profile, SOLID('privateTypeIndex'), null, profileDoc);	// doc
 
+	// Load private type index
 	await fetcher.load(privateTypeIndex).catch((err) => {log.error("Error while fetching privateTypeIndex: "+privateTypeIndex + err)});
 	log.info("Found privateTypeIndex: " + privateTypeIndex);
+
 	//find iotDoc
+	// rule which an iotDoc should obey
 	const newBlankNode = new $rdf.BlankNode;
 	const st1 = new $rdf.Statement(newBlankNode, RDF('type'), SOLID('TypeRegistration'), privateTypeIndex);
 	const st2 = new $rdf.Statement(newBlankNode, SOLID('forClass'), SCHEMA('TextDigitalDocument'), privateTypeIndex); // subj
-	//
+	// subjects that obey these rules (for each rule a list of obeying subjects)
 	const matchingSubjects1 = store.match(null, st1.predicate, st1.object, st1.graph).map( quad => quad.subject); // list of subj
 	const matchingSubjects2 = store.match(null, st2.predicate, st2.object, st2.graph).map( quad => quad.subject); // list of subj
+	// First subject that obeys the combination of all rules
 	let iotTypeRegistration = matchingSubjects1.find( (subj) => { return matchingSubjects2.includes(subj);}); // compare 2 arrays and return first subject found in both
 
-	if(!iotTypeRegistration) { //is empty --> create one
+	// If no iotTypeRegistration, create one
+	if(!iotTypeRegistration) {
 		log.info("Did not found an iotTypeRegistration, making one...");
-		updater.update(null, [st1, st2])
-		.then((ok) => {log.info('updated: ' + ok)}, (err) => {log.erro('error while updating: ' + err)});
+		await updater.update(null, [st1, st2])
+			.then((ok) => {log.info('updated privateTypeIndex with an iotTypeRegistration')}, (err) => {log.erro('error while updating: ' + err)});
 		iotTypeRegistration = newBlankNode; // should be?
 	}
-	solidstorage.value += "private/leshandata.ttl";
+
+	// rule to find the storage
 	const st3 = new $rdf.Statement(iotTypeRegistration, SOLID('instance'), solidstorage, privateTypeIndex);
 	let iotDoc = store.any(st3.subject, st3.predicate, null, st3.graph); // doc
-	if(!iotDoc) { // Create new iotDoc
+	log.debug('iotDoc found is: ' + iotDoc);
+
+	// Create new iotDoc in privateTypeRegistration
+	if(!iotDoc) {
 		log.info("Creating new IoT document for Leshan measurement data on " + solidstorage.value);
-		updater.update(null, [st3])
-		.then(() => {log.info('updated privateTypeIndex')}, (err) => {log.error('error while updating privateTypeIndex: ' + err)});
-		await updater.put(solidstorage, "", 'text/turtle', (uri, ok, err, resp) => { if(err) log.error('error occured during creation of doc ' + err);});
-		iotDoc = solidstorage.value;
+		await updater.update(null, [st3])
+			.then(() => {log.info('updated privateTypeIndex with a storage')}, (err) => {log.error('error while updating privateTypeIndex: ' + err)});
+		// Create a new doc if it not exists
+		// If it already existed, throw error and exit, because we DON'T want to overwrite/append an existing file (which is not the intended iotDoc)
+		await fetcher.createIfNotExists(solidstorage, 'text/turtle', '')
+			.then((resp) => {
+				if (resp.status === 201) log.debug('Created new IoT document...');
+				else if (resp.status === 200) throw new Error(solidstorage.value + ' is already in use by another application. Remove this file first...');
+				else throw new Error('Unknown response status: ' + resp.status + ' but it didn\'t seem to matter (bug)');
+			})
+			// if err, log it and re-throw
+			.catch((err) => {log.error('createIfNotExists failed:',err); process.exitCode = 1; throw err;});
+
+		iotDoc = solidstorage;
 	}
-	log.info("Found IoT Document on " + iotDoc);
+	else {
+		// We have the iotDoc, if we created it or not. Now we still have to be sure that it's really there,
+		// even if the Type Index says so. Thats why we createIfNotExists.
+		await fetcher.createIfNotExists(iotDoc, 'text/turtle', '')
+			.then( (resp) => {if (resp.status === 201) log.warn(iotDoc.value, 'did not yet exist, even while the Type Index said so. We fixed this for you...');})
+			.catch((err) => {log.debug('createIfNotExists failed: + ', err); throw err;});
+		//await updater.put(solidstorage, "", 'text/turtle', (uri, ok, err, resp) => { if(err) log.error('error occured during creation of doc ' + err);});
+	}
+
+	log.info("IoT Document is located on " + iotDoc.value);
 
 	return {
 		webId,

@@ -1,7 +1,10 @@
 import $rdf from 'rdflib';              // Rdf graph manipulation library
 import rootlogger from 'loglevel';
 // Set default loglevel
-rootlogger.setDefaultLevel(rootlogger.levels.DEBUG);
+rootlogger.setDefaultLevel(rootlogger.levels.INFO);
+//rootlogger.getLogger('rmlmapper').setLevel(rootlogger.levels.DEBUG);
+//rootlogger.getLogger('solidPodSaver').setLevel(rootlogger.levels.DEBUG);
+//rootlogger.getLogger('getPodData').setLevel(rootlogger.levels.DEBUG);
 // Namespaces
 const LDP = new $rdf.Namespace('https://www.w3.org/ns/ldp#');
 const SPACE = new $rdf.Namespace('http://www.w3.org/ns/pim/space#');

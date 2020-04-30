@@ -38,6 +38,7 @@ function notificationCallback(msg) {
 	log.info("Recieved NOTIFICATION from leshanServer: " + leshanServer.rdfBasename);
 	let content = JSON.parse(msg.data);
 	jsonToRDF(content, leshanServer).then(ntriples => { // json from this particular leshanServer will always have the same RDF, even for differen solidPod targets
+		log.debug('These are the ntriples in notificationCallback: ' + ntriples);
 		// for each solidPod connected to this particular leshanServer
 		leshanServer.solidPodTargets.forEach((podN) => {
 			addResourceMeasurement(ntriples, solidPods[podN]);

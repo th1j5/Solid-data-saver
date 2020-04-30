@@ -13,8 +13,9 @@ async function startTranslationLayer() {
 		// Then load LwM2M ontology to use
 		await Promise.all([solidLogIn(), loadOntology()]);
 	}
-	catch {
+	catch (err) {
 		log.error('For some reason we could not log in in Solid or download the Ontology');
+		throw err;
 	}
 	registerEventListeners();	// Then register an EventListener to catch all outging Events from the Leshan server
 }
