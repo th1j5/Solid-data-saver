@@ -22,7 +22,7 @@
     "rdflib": "^1.1.0",
     "rocketrml": "^1.7.0",
     "solid-auth-cli": "^1.0.12",
-    "uuid": "^7.0.3"
+    "uuid": "^8.0.0"
   },
   "keywords": [
     "RDF",

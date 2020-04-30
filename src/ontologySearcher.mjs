@@ -65,6 +65,7 @@ function objectClassToIRI_exp(data) {
 	let iri = ontology;
 	log.debug(queryObjectClass(obj));
 	ontStore.execute(queryObjectClass(obj), (err, resp) => {log.debug('This is the response', resp)});
+
 	return iri += 'ThisisAnExperimentalObject';
 }
 
