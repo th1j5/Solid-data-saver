@@ -30,3 +30,17 @@ This would be preferred, but 'rdflib.js' has some problems with blank nodes, thi
     - Go to `node_modules/@solid/cli/source/SolidClient.js` at line [110](https://github.com/solid/solid-cli/blob/4cf28cb271aa5de23fcff6e4d11ce1be48e48d19/src/SolidClient.js#L110).
     - Add `scope: ['openid']` to the `authenticate` object just like [here](https://github.com/solid/oidc-rp/blob/master/src/RelyingParty.js#L68).
 3. When fix is applied, use `npm start` to run the datasaver program.
+
+
+## Bugs
+
+seems like there can occur a race condition (in the start of the program), causing this:
+```
+genid:8a545544-6ee9-46aa-a3f1-2a48df36b9e5
+    a om:MinMeasuredValue, om:ResourceInstance;
+    om:hasTimeStamp
+        "2020-04-30T15:33:12.313Z"^^XML:dateTime,
+        "2020-04-30T15:33:12.569Z"^^XML:dateTime;
+    om:hasValue "-544.6"^^XML:float;
+    om:organizedInto n0:0.
+```

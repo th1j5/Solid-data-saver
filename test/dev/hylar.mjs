@@ -16,11 +16,21 @@ const queryClass = `
 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 	PREFIX owl: <http://www.w3.org/2002/07/owl#>
 	SELECT ?objectName
+		?resourceName
+		?x
 	WHERE
 		{
-			?objectName rdfs:subClassOf ?blank .
-			?blank owl:onProperty lwm2m:hasObjectID ;
+			?objectName rdfs:subClassOf lwm2m:Object, ?blankObjectID , ?blankConsistsOf .
+			?blankObjectID owl:onProperty lwm2m:hasObjectID ;
 				owl:hasValue "3303"^^xsd:integer .
+
+			?blankConsistsOf rdf:type owl:Restriction ;
+				owl:onProperty lwm2m:consistsOf ;
+				?x ?resourceName .	
+
+			?resourceName rdfs:subClassOf lwm2m:Resource , ?blankResourceID .
+			?blankResourceID owl:onProperty lwm2m:hasResourceID ;
+				owl:hasValue "5700"^^xsd:integer .
 		}
 	`;
 
