@@ -35,8 +35,16 @@ export default async function jsonObjectToRDF(leshanJSONdata, lserver={ protocol
 /**
  * Preprocessing
  *   Enrich JSON object with extra data or for easier parsing.
+ *   Notification format is assumed
+ *   Ducktyping Coaplog format and rewriting it to Notification format
+ *   (see fileend for examples)
  */
 function preprocessJSON(leshanJSONdata, lserver) {
+	if (leshanJSONdata.payload) { // Ducktyping COAPLOG format
+		leshanJSONdata.res = leshanJSONdata.payload.bn;
+		leshanJSONdata.val = { value: leshanJSONdata.payload.e[0].v };
+	}
+
 	leshanJSONdata.protocol = lserver.protocol; // choose which protocol the measurement IRI's have
 	leshanJSONdata.domain = lserver.rdfBasename; // choose which basename the measurement IRI's have
 	const objectHierarchy = leshanJSONdata.res.slice(1).split('/'); //remove leading slash & split into numerals
@@ -86,4 +94,29 @@ function loadFileToString(filename){
  * Run if main script file - Node.js only
  * https://stackoverflow.com/questions/34842738/if-name-main-equivalent-in-javascript-es6-modules
  * doesn't work since ES6 :(
+ */
+
+/**
+ * JSON object formats
+ *
+ * NOTIFICATION format
+ * {
+ *  ep: 'thijs-Galago-Pro',
+ *  res: '/3303/0/5700',
+ *  val: { id: 5700, value: -38.8 }
+ * }
+ *
+ * COAPLOG format
+ * {
+ *   timestamp: 1588281716952,
+ *   incoming: true,
+ *   type: 'NON',
+ *   code: '2.05',
+ *   mId: 16395,
+ *   token: 'C7BD44603DE8DA1A',
+ *   options: 'Content-Format: "application/vnd.oma.lwm2m+json" - Observe: 3691',
+ *   payload: { bn: '/3303/0/5700', e: [ { v: -28.8 } ] },
+ *   ep: 'thijs-Galago-Pro'
+ * }
+ *
  */

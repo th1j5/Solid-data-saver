@@ -26,37 +26,63 @@ export function registerEventListeners() {
 	leshanServers.forEach( leshanServer => {
 		leshanServer.origin = leshanServer.protocol + '://' + leshanServer.basename;
 		const eventsource = new EventSource(leshanServer.origin + '/event');
-		eventsource.addEventListener('NOTIFICATION', notificationCallback, false);
-		eventsource.addEventListener('COAPLOG', coapCallback, false);
+		//eventsource.addEventListener('NOTIFICATION', eventNotificationCallback, false);
+		eventsource.addEventListener('COAPLOG', eventNotificationCallback, false);
 	});
 }
 
 /**
- * COAPLOG
+ * Function that processes all events
+ * COAPLOG or NOTIFICATION
  */
-function coapCallback(msg) {
-	const content = JSON.parse(msg.data)
-	console.log(content);
-	console.log(msg.data);
-	// https://github.com/mcollina/coap-packet
-	// to easily parse CoAP protocol? No, not needed anymore
-	// https://github.com/sywide/senml-js
-	// to easily parse SenML protocol?
-}
-
-/**
- * Function that processes all NOTIFICATIONs
- */
-function notificationCallback(msg) {
+function eventNotificationCallback(msg) {
 	const leshanServer = leshanServers.find( ({origin: o}) => o === msg.origin); // retrieve origin server from list of servers (using destructuring assignement)
-	log.info("Recieved NOTIFICATION from leshanServer: " + leshanServer.rdfBasename);
 	let content = JSON.parse(msg.data);
-	return;
+
+	if (msg.type === 'COAPLOG') {
+		if (!filterCoapMesgIsMeas(content)) return;
+		content.payload = JSON.parse(content.payload); // change string payload into JSON object
+	}
+
+	log.info( `Recieved ${msg.type} from leshanServer: ${leshanServer.rdfBasename}`);
+	log.debug(`${msg.type} content is:`, content);
+
 	jsonToRDF(content, leshanServer).then(ntriples => { // json from this particular leshanServer will always have the same RDF, even for differen solidPod targets
-		log.debug('These are the ntriples in notificationCallback: ' + ntriples);
+		log.trace('These are the ntriples in notificationCallback: ' + ntriples);
 		// for each solidPod connected to this particular leshanServer
 		leshanServer.solidPodTargets.forEach((podN) => {
 			addResourceMeasurement(ntriples, solidPods[podN]);
 		});
 	});
 };
+
+/**
+ * Filter COAPLOG messages
+ *   true: useful message
+ *   false: discard
+ * Criteria:
+ *  - is incoming message (only then it can have useful data)
+ *  - has a payload
+ *  - Content-Format: "application/vnd.oma.lwm2m+json"
+ *     else Warning that we don't understand this format
+ *  Furthermore, data.type and data.code are NOT used
+ */
+
+function filterCoapMesgIsMeas(data) {
+	const reg = /Content-Format: ".*"/;
+	if (data.incoming && data.payload) {
+		if(data.options.match(reg)[0].endsWith('"application/vnd.oma.lwm2m+json"')) {
+			return true;
+		}
+		else {
+			log.warn('This CoAP message has the wrong Content-Format... Options: ', data.options);
+			return false;
+		}
+	}
+	else return false;
+}
+
+// https://github.com/mcollina/coap-packet
+// to easily parse CoAP protocol? No, not needed anymore (it's not straight CoAP, but already processed)
+// https://github.com/sywide/senml-js
+// to easily parse SenML protocol? No, overkill and not needed
