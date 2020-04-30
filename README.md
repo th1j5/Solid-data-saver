@@ -1,11 +1,20 @@
 # soliddatasaver
 ## Description
-Some code which allows us to save static data in a users datapod (if their credentials are available) without interfacing through any GUI.
-- main.js: Contains all code needed to upload the static data.
-- static(1/2).ttl: Turtle file containing static data.
-- backup.ttl: Turtle file which serves as local backup of the online graph (saved in main.js)
-- generator.py: Python script used to generate static.ttl.
-- test.js: Random test file to try out a few things here and there.
+Some code which allows us to save data in a users datapod (if their credentials are available) without interfacing through any GUI. (Fount in src/)
+- main.mjs: Starts the program. First logs in to the Solid pod(s) and dowloads the ontology, then registers itself at the leshan server(s).
+- leshanEventRetriever.mjs: Registers EventListener with a callback
+- rmlmapper.mjs: Maps incoming JSON object to RDF(N3). Does some preprocessing and uses then RocketRML.
+- solidPodSaver.mjs: Logs in into Solid pod(s) and accepts RDF measurements, which are send to the Solid pod.
+- getPodData.mjs: Return the right IoTDocument to write our data to, if webID is given. Uses the private type index of solid.
+- ontologySearcher.mjs: Downloads LwM2M ontology and uses this to query which Object/Resource Class is bound to which number.
+Thus, this is used to map objectnumber <-> objectname (like: object3303 <-> lwm2m:LWM2MTemperatureObject).
+
+In config/
+- config.mjs: All configuration parameters can be adjusted here.
+- mapping_uuid.ttl: RML file to denote how the transformation from JSON to RDF has to happen.
+This file uses skolemization of blank nodes, which means that blank nodes get a random IRI.
+- mapping_blank_nodes.ttl: Same as above, but using blank nodes instead of nodes with a random IRI.
+This would be preferred, but 'rdflib.js' has some problems with blank nodes, thinking they are the same when they shouldn't be. (Thus squashing measurement into 1 node :/)
 
 ## Installation and usage
 
@@ -20,4 +29,4 @@ Some code which allows us to save static data in a users datapod (if their crede
 2. !!! Important: Due to some ridiculous unpatched [issue](https://github.com/solid/solid-cli/issues/15), for this to work following patch needs to be applied manually:
     - Go to `node_modules/@solid/cli/source/SolidClient.js` at line [110](https://github.com/solid/solid-cli/blob/4cf28cb271aa5de23fcff6e4d11ce1be48e48d19/src/SolidClient.js#L110).
     - Add `scope: ['openid']` to the `authenticate` object just like [here](https://github.com/solid/oidc-rp/blob/master/src/RelyingParty.js#L68).
-3. When fix is applied, use `node main.js` to run the datasaver program.
+3. When fix is applied, use `npm start` to run the datasaver program.

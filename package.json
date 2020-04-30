@@ -17,11 +17,11 @@
   "dependencies": {
     "eventsource": "^1.0.7",
     "fs": "0.0.1-security",
-    "hylar": "^1.10.1",
+    "hylar": "^1.10.2",
     "loglevel": "^1.6.8",
-    "rdflib": "^1.1.0",
+    "rdflib": "^1.2.0",
     "rocketrml": "^1.7.0",
-    "solid-auth-cli": "^1.0.12",
+    "solid-auth-cli": "^1.0.14",
     "uuid": "^8.0.0"
   },
   "keywords": [
