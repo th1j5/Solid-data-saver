@@ -119,4 +119,7 @@ function loadFileToString(filename){
  *   ep: 'thijs-Galago-Pro'
  * }
  *
+ * OR payload: { bn: '/3303/0/', e: [{n: 5601, v: 19 }, {n:5700, v:30}]}
+ * and v can be 'v' or 'bv'/'vb' (boolean value) or 'sv'/'vs' (string value)
+ *
  */
