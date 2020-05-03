@@ -82,6 +82,14 @@
     rr:objectMap [ rml:reference "value" ; rr:datatype xsd:float ]
   ],
   [
+    rr:predicate lwm2m:hasValue;
+    rr:objectMap [ rml:reference "stringvalue" ]
+  ],
+  [
+    rr:predicate lwm2m:hasValue;
+    rr:objectMap [ rml:reference "booleanvalue" ; rr:datatype xsd:boolean ]
+  ],
+  [
     rr:predicate rdf:type;
     #rr:objectMap [ rr:template "${LwM2Montology}{resource}" ]
     rr:objectMap :ResourceClassIRIFunctionMap

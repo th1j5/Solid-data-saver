@@ -96,7 +96,6 @@ async function objectClassToIRI_reasoning(data) {
  */
 // Can be an async function, because RMLRocket supports this since v1.7.0
 async function objectClassToIRI_SPARQL_query_on_ontology(data) {
-	log.warn("Warning: using an 'in development' function");
 	const obj = data[0];
 	log.debug(queryObjectClass(obj));
 	const iri = await new Promise( (resolve, reject) => {
@@ -129,7 +128,6 @@ async function resourceClassToIRI_reasoning(data) {
  */
 // Can be an async function, because RMLRocket supports this since v1.7.0
 async function resourceClassToIRI_SPARQL_query_on_ontology(data) {
-	log.warn("Warning: using an 'in development' function");
 	const obj = data[0];
 	const res = data[1];
 	const resn = Number(res);

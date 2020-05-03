@@ -50,7 +50,7 @@ export default function addResourceMeasurement(graph, solidPod) {
 	log.debug('Our solidPod iotDoc is: ' + solidPod.podData.iotDoc.value);
 	$rdf.parse(graph, tempStore, solidPod.podData.iotDoc.value, 'text/n3');
 	log.debug($rdf.serialize(null, tempStore, solidPod.podData.iotDoc.value, 'text/turtle'));
-	//solidPod.updater.update(null, tempStore, callbackUpdate);
+	solidPod.updater.update(null, tempStore, callbackUpdate);
 }
 function callbackUpdate(uri, success, err) {
 	if(success) {

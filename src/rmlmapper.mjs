@@ -37,9 +37,8 @@ export default async function jsonObjectToRDF(leshanJSONdata, lserver={ protocol
 /**
  * Preprocessing
  *   Enrich JSON object with extra data or for easier parsing.
- *   Notification format is assumed
- *   Ducktyping Coaplog format and rewriting it to Notification format
- *   (see fileend for examples)
+ *   Coaplog format is assumed
+ *   (see end of file for examples of the structure)
  */
 function preprocessJSON(leshanJSONdata, lserver) {
 	const data = {};
@@ -58,7 +57,9 @@ function preprocessJSON(leshanJSONdata, lserver) {
 			object : objectHierarchy[0],
 			objectInstance : objectHierarchy[1],
 			resource : objectHierarchy[2],
-			value : meas.v, //TODO: sv, sb (string/boolean)
+			value : meas.v,
+			stringvalue : meas.sv,
+			booleanvalue : meas.bv,
 		};
 		if (skolemization) {
 			// Could dynamically import uuid, but this is not suggested
