@@ -1,57 +1,58 @@
-@prefix rr: <http://www.w3.org/ns/r2rml#> .
-  @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-  @prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-  @prefix schema: <http://schema.org/> .
-  @prefix ql: <http://semweb.mmlab.be/ns/ql#> .
-  @prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
-  @prefix fno: <http://w3id.org/function/ontology#> .
-  @prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
-  @base <http://sti2.at/> . #the base for the classes
-  
-  
-  <#LOGICALSOURCE>
-  rml:source "input.json";
-  rml:referenceFormulation ql:JSONPath;
-  rml:iterator "$".
-  
-  
-  <#Mapping>
-  rml:logicalSource <#LOGICALSOURCE>;
-  
-   rr:subjectMap [
-      rr:termType rr:BlankNode;
-      rr:class schema:Person;
-   ];
-  
-  
-  rr:predicateObjectMap [
-      rr:predicate schema:name;
-      rr:objectMap [ rml:reference "name" ];
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix ex: <http://example.com/ns#>.
+
+
+<#VenueMapping>
+  rml:logicalSource [
+    rml:source "input.json";
+    rml:referenceFormulation ql:JSONPath ;
+    rml:iterator "$"
   ];
-  
-  rr:predicateObjectMap [
-      rr:predicate schema:age;
-      rr:objectMap [ rml:reference "age" ];
+  rr:subjectMap
+  [
+    rr:template "http://loc.example.com/city/{$.venue[*].location.city}";
+    rr:class ex:City;
   ];
-  
-   rr:predicateObjectMap [
-        rr:predicate schema:description;
-        rr:objectMap  <#FunctionMap>;
-    ].
-    
-<#FunctionMap> a fno:Function;
-         fnml:functionValue [
-             rml:logicalSource <#LOGICALSOURCE> ;
-             rr:predicateObjectMap [
-                 rr:predicate fno:executes ;
-                 rr:objectMap [ rr:constant grel:createDescription ]
-             ] ;
-             rr:predicateObjectMap [
-                 rr:predicate <inputString> ;
-                 rr:objectMap [ rml:reference "name" ]
-             ];
-              rr:predicateObjectMap [
-                  rr:predicate <inputString> ;
-                  rr:objectMap [ rml:reference "age" ]
-              ]
-         ] .
+  rr:predicateObjectMap [
+    rr:predicate ex:latlong;
+    rr:objectMap [
+      rr:parentTriplesMap <#LocationMapping_JSON>
+    ]
+  ];
+  rr:predicateObjectMap [
+    rr:predicate ex:countryCode;
+    rr:objectMap [
+      rml:reference "$.venue[*].location.country"
+    ]
+  ];
+  rr:predicateObjectMap [
+    rr:predicate ex:onContinent;
+    rr:objectMap [
+      rml:reference "$.venue[*].location.continent"
+    ]
+  ].
+
+  <#LocationMapping_JSON>
+  rml:logicalSource [
+    rml:source "input.json" ;
+    rml:referenceFormulation ql:JSONPath ;
+    rml:iterator "$"
+  ];
+  rr:subjectMap [
+    rr:template "http://loc.example.com/latlong/{$.venue[*].latitude},{$.venue[*].longitude}"
+  ];
+  rr:predicateObjectMap [
+    rr:predicate ex:lat;
+    rr:objectMap [
+      rml:reference "$.venue[*].latitude"
+    ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:long;
+    rr:objectMap [
+      rml:reference "$.venue[*].longitude"
+    ]
+  ].

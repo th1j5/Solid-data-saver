@@ -27,6 +27,8 @@ export default async function jsonObjectToRDF(leshanJSONdata, lserver={ protocol
 	const rml_data_in = preprocessJSON(leshanJSONdata, lserver); //prepare rml_data_in
 	return loadFileToString(rmlmappingfile)
 		.then( async (rmlmapping) => { 
+			rmlmapping = rmlmapping.replace(/\${LwM2Montology}/g, ontology);// replace some values
+			log.trace('This is the used rmlmapping:', rmlmapping);
 			return await rml.parseFileLive(rmlmapping, rml_data_in, rmloptions)
 				.catch( (err) => {log.error(err);});
 		});
@@ -40,23 +42,33 @@ export default async function jsonObjectToRDF(leshanJSONdata, lserver={ protocol
  *   (see fileend for examples)
  */
 function preprocessJSON(leshanJSONdata, lserver) {
-	if (leshanJSONdata.payload) { // Ducktyping COAPLOG format
-		leshanJSONdata.res = leshanJSONdata.payload.bn;
-		leshanJSONdata.val = { value: leshanJSONdata.payload.e[0].v };
+	const data = {};
+	data.leshanServer = {};
+	data.device = {};
+	data.meas = [];
+	// Server options
+	data.leshanServer.protocol = lserver.protocol; // choose which protocol the measurement IRI's have
+	data.leshanServer.domain = lserver.rdfBasename; // choose which basename the measurement IRI's have
+	data.device.ep = leshanJSONdata.ep;
+	// measurements
+	for (const meas of leshanJSONdata.payload.e) {
+		const wholeHierarchy = leshanJSONdata.payload.bn + ( meas.n ? meas.n : '' ); // '/3303/0/' + '5700'
+		const objectHierarchy = wholeHierarchy.slice(1).split('/'); //remove leading slash & split into numerals
+		const datameas = { 
+			object : objectHierarchy[0],
+			objectInstance : objectHierarchy[1],
+			resource : objectHierarchy[2],
+			value : meas.v, //TODO: sv, sb (string/boolean)
+		};
+		if (skolemization) {
+			// Could dynamically import uuid, but this is not suggested
+			datameas.skolemIRI = uuidv4();
+		}
+		data.meas.push(datameas); // new meas
 	}
+	log.debug(data);
 
-	leshanJSONdata.protocol = lserver.protocol; // choose which protocol the measurement IRI's have
-	leshanJSONdata.domain = lserver.rdfBasename; // choose which basename the measurement IRI's have
-	const objectHierarchy = leshanJSONdata.res.slice(1).split('/'); //remove leading slash & split into numerals
-	leshanJSONdata.object = objectHierarchy[0];
-	leshanJSONdata.objectInstance = objectHierarchy[1];
-	leshanJSONdata.resource = objectHierarchy[2];
-	if (skolemization) {
-		// Could dynamically import uuid, but this is not suggested
-		leshanJSONdata.skolemIRI = uuidv4();
-	}
-
-	return { 'data.json': JSON.stringify(leshanJSONdata)}; // RML data in
+	return { 'data.json': JSON.stringify(data)}; // RML data in
 }
 
 /**

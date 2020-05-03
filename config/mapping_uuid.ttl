@@ -1,7 +1,6 @@
 @base <http://localhost.com:8080/api/clients/> . 
 
 @prefix : <http://example.com/rmlmapping/> . # just representing the local mapping.ttl RDF graph
-@prefix base: <http://base.com/> .
 
 @prefix rr: <http://www.w3.org/ns/r2rml#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -11,7 +10,7 @@
 @prefix fnml: <http://semweb.mmlab.be/ns/fnml#> . # functions
 @prefix fno: <http://w3id.org/function/ontology#> .
 
-@prefix lwm2m: <https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#> .
+@prefix lwm2m: <${LwM2Montology}> . # will be replaced in Javascript by ontology parameter
 
 #### DATASOURCE
 :datasource
@@ -24,14 +23,14 @@
   rml:logicalSource :datasource;
 
   rr:subjectMap [ 
-    rr:template "{protocol}://{domain}/{ep}";
+    rr:template "{$.leshanServer.protocol}://{$.leshanServer.domain}/{$.device.ep}";
     rr:class lwm2m:Device;
   ];
 
   rr:predicateObjectMap [ 
     rr:predicate lwm2m:hasDeviceID ; 
-    rr:objectMap [ rml:reference "$.ep" ; rr:datatype xsd:string ]
-    # see specs: normale should be "$.ep"
+    rr:objectMap [ rml:reference "$.device.ep" ; rr:datatype xsd:string ]
+    # see specs: normale should be "$.device.ep"
     # This works NOT with rmlmapper in java, but it does for RocketRML in Javascript
   ],
   [ 
@@ -45,12 +44,12 @@
   #rr:subjectMap :ObjectInstanceFunctionMap;	# This doesn't work to create an IRI created by function
   rr:subjectMap [
     rr:class lwm2m:ObjectInstance; # This doesn't work anymore? --> set at Function --> extra predicate
-    rr:template "{protocol}://{domain}/{ep}/{object}/{objectInstance}";
+    rr:template "{$.leshanServer.protocol}://{$.leshanServer.domain}/{$.device.ep}/{$.meas[*].object}/{$.meas[*].objectInstance}";
   ];
 
   rr:predicateObjectMap [
     rr:predicate rdf:type;
-    #rr:objectMap [ rr:template "https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#{object}" ];
+    #rr:objectMap [ rr:template "${LwM2Montology}{$.meas[*].object}" ];
     rr:objectMap :ObjectClassIRIFunctionMap; # should map 3303 --> LWM2MTemperatureObject
   ],
   [ # sad that we need an extra predicate node, because rr:class or rr:object or rr:constant (see rest of document) should work
@@ -67,24 +66,24 @@
   ],
   [
     rr:predicate lwm2m:hasObjectInstanceID;
-    rr:objectMap [ rr:reference "$.objectInstance" ; rr:datatype xsd:integer ]
+    rr:objectMap [ rr:reference "$.meas[*].objectInstance" ; rr:datatype xsd:integer ]
   ].
 #### RESOURCE
 :ResourceMap a rr:TriplesMap;
   rml:logicalSource :datasource;
 
   rr:subjectMap [
-    rr:template "{protocol}://{domain}/.well-known/genid/{skolemIRI}";
+    rr:template "{$.leshanServer.protocol}://{$.leshanServer.domain}/.well-known/genid/{*.meas[*].skolemIRI}";
     rr:class lwm2m:ResourceInstance
   ];
 
   rr:predicateObjectMap [
     rr:predicate lwm2m:hasValue;
-    rr:objectMap [ rml:reference "val.value" ; rr:datatype xsd:float ]
+    rr:objectMap [ rml:reference "$.meas[*].value" ; rr:datatype xsd:float ]
   ],
   [
     rr:predicate rdf:type;
-    #rr:objectMap [ rr:template "https://florsanders.inrupt.net/public/ontologies/omalwm2m.ttl#{resource}" ]
+    #rr:objectMap [ rr:template "${LwM2Montology}{$.meas[*].resource}" ]
     rr:objectMap :ResourceClassIRIFunctionMap
   ],
   [ # sad that we need an extra predicate node, because rr:class or rr:object or rr:constant (see rest of document) should work
@@ -129,7 +128,7 @@
     ],
     [
       rr:predicate <inputString> ;
-      rr:objectMap [ rr:reference "object" ];
+      rr:objectMap [ rr:reference "$.meas[*].object" ];
     ]
   ] .
 ## resource to IRI mapper (5700 --> lwm2m:SensorValue)
@@ -142,11 +141,11 @@
     ],
     [
       rr:predicate <inputString> ;
-      rr:objectMap [ rr:reference "$.object" ];
+      rr:objectMap [ rr:reference "$.meas[*].object" ];
     ],
     [
       rr:predicate <inputString> ;
-      rr:objectMap [ rr:reference "$.resource" ];
+      rr:objectMap [ rr:reference "$.meas[*].resource" ];
     ]
   ] .
 
