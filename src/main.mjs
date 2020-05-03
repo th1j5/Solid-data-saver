@@ -1,6 +1,7 @@
 import { registerEventListeners } from './leshanEventRetriever.mjs';
 import { loadOntology } from './ontologySearcher.mjs';
 import { solidLogIn } from './solidPodSaver.mjs';
+import { loadRMLmappingFile } from './rmlmapper.mjs';
 import rootlogger from 'loglevel'; // logging
 
 const log = rootlogger;
@@ -11,7 +12,8 @@ async function startTranslationLayer() {
 	try {
 		// First log in in SOLID
 		// Then load LwM2M ontology to use
-		await Promise.all([solidLogIn(), loadOntology()]);
+		// Also load RML mapping
+		await Promise.all([solidLogIn(), loadOntology(), loadRMLmappingFile()]);
 	}
 	catch (err) {
 		log.error('For some reason we could not log in in Solid or download the Ontology');

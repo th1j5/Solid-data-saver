@@ -23,14 +23,15 @@
   rml:logicalSource :datasource;
 
   rr:subjectMap [ 
-    rr:template "{leshanServer.protocol}://{leshanServer.domain}/{device.ep}";
+    # carret (^) is used in jsonpath-plus to acces parents of elements (see also https://github.com/semantifyit/RocketRML/issues/14)
+    rr:template "{^^.leshanServer.protocol}://{^^.leshanServer.domain}/{^^.device.ep}";
     rr:class lwm2m:Device;
   ];
 
   rr:predicateObjectMap [ 
     rr:predicate lwm2m:hasDeviceID ; 
-    rr:objectMap [ rml:reference "device.ep" ; rr:datatype xsd:string ]
-    # see specs: normale should be "device.ep"
+    rr:objectMap [ rml:reference "^^.device.ep" ; rr:datatype xsd:string ]
+    # see specs: normale should be "^^.device.ep"
     # This works NOT with rmlmapper in java, but it does for RocketRML in Javascript
   ],
   [ 
@@ -44,7 +45,7 @@
   #rr:subjectMap :ObjectInstanceFunctionMap;	# This doesn't work to create an IRI created by function
   rr:subjectMap [
     rr:class lwm2m:ObjectInstance; # This doesn't work anymore? --> set at Function --> extra predicate
-    rr:template "{leshanServer.protocol}://{leshanServer.domain}/{device.ep}/{object}/{objectInstance}";
+    rr:template "{^^.leshanServer.protocol}://{^^.leshanServer.domain}/{^^.device.ep}/{object}/{objectInstance}";
   ];
 
   rr:predicateObjectMap [
@@ -73,7 +74,7 @@
   rml:logicalSource :datasource;
 
   rr:subjectMap [
-    rr:template "{leshanServer.protocol}://{leshanServer.domain}/.well-known/genid/{skolemIRI}";
+    rr:template "{^^.leshanServer.protocol}://{^^.leshanServer.domain}/.well-known/genid/{skolemIRI}";
     rr:class lwm2m:ResourceInstance
   ];
 
@@ -149,7 +150,7 @@
     ],
     [
       rr:predicate <inputString> ;
-      rr:objectMap [ rr:reference ".object" ];
+      rr:objectMap [ rr:reference "object" ];
     ],
     [
       rr:predicate <inputString> ;

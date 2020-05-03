@@ -15,7 +15,10 @@ import { objectClassToIRI, resourceClassToIRI } from './ontologySearcher.mjs';
 // Program parameters
 import {lwm2mOnto as ontology, rmlmappingfile, rmloptions, skolemization} from '../config/config.mjs';
 
+export { loadRMLmappingFile };
+
 const log = rootlogger.getLogger('rmlmapper');
+let rmlmapping;
 
 /**
  * Main function:
@@ -25,26 +28,32 @@ const log = rootlogger.getLogger('rmlmapper');
  */
 export default async function jsonObjectToRDF(leshanJSONdata, lserver={ protocol: 'http', basename: 'localhost:8080', rdfBasename:'defaultLeshan.com'}) {
 	const rml_data_in = preprocessJSON(leshanJSONdata, lserver); //prepare rml_data_in
-	return loadFileToString(rmlmappingfile)
-		.then( async (rmlmapping) => { 
-			rmlmapping = rmlmapping.replace(/\${LwM2Montology}/g, ontology);// replace some values
-			log.trace('This is the used rmlmapping:', rmlmapping);
-			return await rml.parseFileLive(rmlmapping, rml_data_in, rmloptions)
-				.catch( (err) => {log.error(err);});
-		});
+	return await rml.parseFileLive(rmlmapping, rml_data_in, rmloptions)
+		.catch( (err) => {log.error(err);});
+}
+
+/**
+ * Load RML mapping file
+ */
+async function loadRMLmappingFile() {
+	rmlmapping = await loadFileToString(rmlmappingfile);
+	rmlmapping = rmlmapping.replace(/\${LwM2Montology}/g, ontology);// replace some values
+	log.info('RML mapping file loaded');
+	log.trace('This is the used rmlmapping:', rmlmapping);
+	return;
 }
 
 /**
  * Preprocessing
  *   Enrich JSON object with extra data or for easier parsing.
- *   Coaplog format is assumed
+ *   Coaplog format (is SenML) is assumed - Notification format is not supported anymore
  *   (see end of file for examples of the structure)
  */
 function preprocessJSON(leshanJSONdata, lserver) {
 	const data = {};
-	data.leshanServer = {};
-	data.device = {};
-	data.meas = [];
+	data.leshanServer = {};	// Serveroptions
+	data.device = {};	// Device Endpoint options
+	data.meas = [];		// List of measurements
 	// Server options
 	data.leshanServer.protocol = lserver.protocol; // choose which protocol the measurement IRI's have
 	data.leshanServer.domain = lserver.rdfBasename; // choose which basename the measurement IRI's have
@@ -59,14 +68,12 @@ function preprocessJSON(leshanJSONdata, lserver) {
 			resource : objectHierarchy[2],
 			value : meas.v,
 			stringvalue : meas.sv,
-			booleanvalue : meas.bv,
+			booleanvalue : meas.bv, // in RDF, this has xsd:boolean
 		};
 		if (skolemization) {
 			// Could dynamically import uuid, but this is not suggested
 			datameas.skolemIRI = uuidv4();
 		}
-		datameas.leshanServer = data.leshanServer; // Needed for (see https://github.com/semantifyit/RocketRML/issues/14)
-		datameas.device = data.device; // Needed for RML
 		data.meas.push(datameas); // new meas
 	}
 	log.debug(data);
