@@ -8,7 +8,7 @@
   rml:logicalSource [
     rml:source "input.json";
     rml:referenceFormulation ql:JSONPath ;
-    rml:iterator "$"
+    rml:iterator "$.venue[*]"
   ];
   rr:subjectMap
   [
@@ -38,7 +38,7 @@
   rml:logicalSource [
     rml:source "input.json" ;
     rml:referenceFormulation ql:JSONPath ;
-    rml:iterator "$"
+    rml:iterator "$.venue[*]"
   ];
   rr:subjectMap [
     rr:template "http://loc.example.com/latlong/{$.venue[*].latitude},{$.venue[*].longitude}"

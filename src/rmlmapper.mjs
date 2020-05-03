@@ -64,6 +64,8 @@ function preprocessJSON(leshanJSONdata, lserver) {
 			// Could dynamically import uuid, but this is not suggested
 			datameas.skolemIRI = uuidv4();
 		}
+		datameas.leshanServer = data.leshanServer; // Needed for (see https://github.com/semantifyit/RocketRML/issues/14)
+		datameas.device = data.device; // Needed for RML
 		data.meas.push(datameas); // new meas
 	}
 	log.debug(data);
