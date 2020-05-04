@@ -1,9 +1,35 @@
 import jsonToRDF from "../src/rmlmapper.mjs";
+import { loadOntology } from "../src/ontologySearcher.mjs";
+import { loadRMLmappingFile } from "../src/rmlmapper.mjs";
 import $rdf from "rdflib";
 
-const leshanJSONdata = {"ep": "thijs-Galago-Pro","res": "/3303/0/5700","val": {"id": 5700,"value": -5.1}};
-const leshanJSONdata2 = {"ep": "thijs-Galago-Pro","res": "/3303/0/5700","val": {"id": 5700,"value": -3}};
+//const leshanJSONdata = {"ep": "thijs-Galago-Pro","res": "/3303/0/5700","val": {"id": 5700,"value": -5.1}};
+//const leshanJSONdata2 = {"ep": "thijs-Galago-Pro","res": "/3303/0/5700","val": {"id": 5700,"value": -3}};
+const leshanJSONdata = {
+  timestamp: 1588585544734,
+  incoming: true,
+  type: 'ACK',
+  code: '2.05',
+  mId: 17331,
+  token: '888B095E3D00D70B',
+  options: 'Content-Format: "application/vnd.oma.lwm2m+json"',
+  payload: { bn: '/3303/0/5700', e: [ {"v":21.4} ] },
+  ep: 'thijs-Galago-Pro'
+};
+
 const store = new $rdf.graph()
+
+/**
+ * Entrypoint
+ */
+
+//testing1()
+//testing0()
+test();
+async function test() {
+	await Promise.all([loadOntology(), loadRMLmappingFile()]);
+	test_object_mapping()
+}
 
 /**
  * just test jsonToRdf & ouput in turtle
@@ -83,7 +109,3 @@ function test_object_mapping() {
 		console.log($rdf.serialize(null, store, 'http://exam.com', 'text/turtle'))
 	});
 }
-
-//testing1()
-//testing0()
-test_object_mapping()

@@ -122,7 +122,11 @@
     ],
     [
       rr:predicate <inputString> ;
-      rr:object "This should not be needed, since this function has no input parameters"
+      rr:objectMap [ rr:reference "object" ];
+    ],
+    [
+      rr:predicate <inputString> ;
+      rr:objectMap [ rr:reference "resource" ];
     ]
   ] .
 

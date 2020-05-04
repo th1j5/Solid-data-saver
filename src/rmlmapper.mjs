@@ -11,7 +11,7 @@ import fs from 'fs';    	// File system to read in the static file
 import rml from 'rocketrml'; 	// RML mapper to map JSON --> RDF
 import { v4 as uuidv4 } from 'uuid'; // Random ID generator
 import rootlogger from 'loglevel';
-import { objectClassToIRI, resourceClassToIRI } from './ontologySearcher.mjs';
+import { objectClassToIRI, resourceClassToIRI, giveTimeStamp as giveTimeStamp } from './ontologySearcher.mjs';
 // Program parameters
 import {lwm2mOnto as ontology, rmlmappingfile, rmloptions, skolemization} from '../config/config.mjs';
 
@@ -85,14 +85,9 @@ function preprocessJSON(leshanJSONdata, lserver) {
  * RML functions
  */
 rmloptions.functions = {
-    'http://functions.com/func#timestamp': () => { return new Date().toISOString(); },
-	// not used function:
+    'http://functions.com/func#timestamp': giveTimeStamp,
     'http://functions.com/func#objectClassIRI': objectClassToIRI,
     'http://functions.com/func#resourceClassIRI': resourceClassToIRI,
-    'http://functions.com/func#objectInstance': data => { 
-	    const objectInst = data[1].match(/\/\d{1,}\/\d{1,}/); // regexp to match /3303/0 of string /3303/0/5700
-	    log.debug(data[1]);
-	    return basenameLeshanserver + data[0] + objectInst[0]; },
 };
 
 

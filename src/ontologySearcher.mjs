@@ -14,50 +14,17 @@ import rootlogger from 'loglevel';
 import {lwm2mOnto as ontology} from '../config/config.mjs';
 
 // Export required functions
-export { loadOntology_promise as loadOntology, objectClassToIRI_SPARQL_query_on_ontology as objectClassToIRI, resourceClassToIRI_SPARQL_query_on_ontology as resourceClassToIRI };
+export {
+	loadOntology_promise as loadOntology,
+	objectClassToIRI_SPARQL_query_on_ontology as objectClassToIRI,
+	resourceClassToIRI_SPARQL_query_on_ontology as resourceClassToIRI,
+	giveTimeStamp
+};
 
 // Promisify (turning a function with a callback into a function returning a promise)
 const createStore = util.promisify(rdfstore.create);
 const log = rootlogger.getLogger('ontologySearcher');
 let ontStore; // contains ontology store
-const sparqlPrefixes = `
-        PREFIX lwm2m: <${ontology}>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX owl: <http://www.w3.org/2002/07/owl#>
-`
-// Using an arrow function to return a template literal (notice the absence of {})
-// objNum is a string
-const queryObjectClass = (objNum) => sparqlPrefixes + `
-        SELECT ?objectName
-        WHERE
-                {
-                        ?objectName rdfs:subClassOf lwm2m:Object, ?blank .
-                        ?blank owl:onProperty lwm2m:hasObjectID ;
-                                owl:hasValue "${objNum}"^^xsd:integer .
-                }
-        `;
-// TODO (explanation)
-const queryResourceClass = (objNum, resNum) => sparqlPrefixes + ` 
-        SELECT ?objectName
-                ?resourceName
-                ?x
-        WHERE
-                {
-                        ?objectName rdfs:subClassOf lwm2m:Object, ?blankObjectID , ?blankConsistsOf .
-                        ?blankObjectID owl:onProperty lwm2m:hasObjectID ;
-                                owl:hasValue "${objNum}"^^xsd:integer .
-
-                        ?blankConsistsOf rdf:type owl:Restriction ;
-                                owl:onProperty lwm2m:consistsOf ;
-                                ?x ?resourceName .    
-
-                        ?resourceName rdfs:subClassOf lwm2m:Resource , ?blankResourceID .
-                        ?blankResourceID owl:onProperty lwm2m:hasResourceID ;
-                                owl:hasValue "${resNum}"^^xsd:integer .
-                }
-        `;
 
 /**
  * The main program has to call loadOntology() to make the ontology load
@@ -75,6 +42,29 @@ async function loadOntology_promise() {
 		ontStore.load('remote', ontology, (err, ans) => {
 			if(err) reject(err);
 			else log.info('Ontology loaded to search in'); resolve(ans);
+		});
+	});
+}
+
+/**
+ * Give a Time Stamp when this Resource needs it
+ */
+async function giveTimeStamp(data) {
+	const resName = await resourceClassToIRI_SPARQL_query_on_ontology(data);
+	// See if this has a timeStampValue
+	log.log(queryHasTimeStamp(resName));
+	const needsTimeStamp = await hasTimeStamp(resName);
+	return needsTimeStamp ? new Date().toISOString() : undefined;
+}
+// boolean
+async function hasTimeStamp(resName) {
+	return new Promise( (resolve, reject) => {
+		ontStore.execute(queryHasTimeStamp(resName), (err, resp) => {
+			if(err) reject(err);
+			else {
+				log.debug('Needs timeStamp:', resp);
+				resolve(resp);
+			}
 		});
 	});
 }
@@ -128,13 +118,12 @@ async function resourceClassToIRI_reasoning(data) {
  */
 // Can be an async function, because RMLRocket supports this since v1.7.0
 async function resourceClassToIRI_SPARQL_query_on_ontology(data) {
-	const obj = data[0];
+	const objName = await objectClassToIRI_SPARQL_query_on_ontology([data[0]]); // reuse function
 	const res = data[1];
-	const resn = Number(res);
 
-	log.debug(queryResourceClass(obj, res));
+	log.debug(queryResourceClass(objName, res));
 	const iri = await new Promise( (resolve, reject) => {
-		ontStore.execute(queryResourceClass(obj, res), (err, resp) => {
+		ontStore.execute(queryResourceClass(objName, res), (err, resp) => {
 			if(err) reject(err);
 			else {
 				const iri = resp[0].resourceName.value;
@@ -145,6 +134,57 @@ async function resourceClassToIRI_SPARQL_query_on_ontology(data) {
 	});
 	return iri;
 }
+
+/**
+ * SPARQL query definitions
+ */
+
+const sparqlPrefixes = `
+        PREFIX lwm2m: <${ontology}>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+`
+// Using an arrow function to return a template literal (notice the absence of {})
+// objNum is a string
+const queryObjectClass = (objNum) => sparqlPrefixes + `
+        SELECT ?objectName
+        WHERE
+                {
+                        ?objectName rdfs:subClassOf lwm2m:Object, ?blank .
+                        ?blank owl:onProperty lwm2m:hasObjectID ;
+                                owl:hasValue "${objNum}"^^xsd:integer .
+                }
+        `;
+// TODO (explanation)
+const queryResourceClass = (objName, resNum) => sparqlPrefixes + ` 
+        SELECT ?objectName
+                ?resourceName
+                ?x
+        WHERE
+                {
+                        <${objName}> rdfs:subClassOf ?blankConsistsOf .
+
+                        ?blankConsistsOf rdf:type owl:Restriction ;
+                                owl:onProperty lwm2m:consistsOf ;
+                                ?x ?resourceName .    
+
+                        ?resourceName rdfs:subClassOf lwm2m:Resource , ?blankResourceID .
+                        ?blankResourceID owl:onProperty lwm2m:hasResourceID ;
+                                owl:hasValue "${resNum}"^^xsd:integer .
+                }
+        `;
+// ASK query, see SPARQL specs
+const queryHasTimeStamp = (resIRI) => sparqlPrefixes + `
+	ASK
+		{
+			<${resIRI}> rdfs:subClassOf ?blankTimeStamp .
+			?blankTimeStamp rdf:type owl:Restriction ;
+				owl:onProperty lwm2m:hasTimeStamp ;
+				?cardinality ?num.
+		}
+	`;
 
 /**
  * Function to map objectNumber --> objectClass
