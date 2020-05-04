@@ -2,9 +2,9 @@ import $rdf from 'rdflib';              // Rdf graph manipulation library
 import rootlogger from 'loglevel';
 
 // Set default loglevel
-rootlogger.setDefaultLevel(rootlogger.levels.INFO);
+rootlogger.setDefaultLevel(rootlogger.levels.DEBUG);
 // Set loglevel per Logger
-//rootlogger.getLogger('rmlmapper').setLevel(rootlogger.levels.DEBUG);
+rootlogger.getLogger('rmlmapper').setLevel(rootlogger.levels.DEBUG);
 //rootlogger.getLogger('solidPodSaver').setLevel(rootlogger.levels.DEBUG);
 //rootlogger.getLogger('solidPodQuerier').setLevel(rootlogger.levels.DEBUG);
 //rootlogger.getLogger('getPodData').setLevel(rootlogger.levels.DEBUG);

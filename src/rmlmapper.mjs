@@ -79,6 +79,7 @@ async function preprocessJSON(leshanJSONdata, lserver, solidPod) {
 			datameas.skolemIRI = uuidv4();
 			const objRes = [datameas.object, datameas.resource];
 			const uuidExistingNode = getGenIdExistingNode(await resourceClassToIRI(objRes), solidPod);
+			log.debug(uuidExistingNode);
 			if (!(await giveTimeStamp(objRes)) && uuidExistingNode) { // needs to be overwritten
 				log.debug('This is the UUID of the existing node', uuidExistingNode);
 				datameas.skolemIRI = uuidExistingNode;

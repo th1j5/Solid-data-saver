@@ -11,6 +11,7 @@ const log = rootlogger.getLogger('solidPodQuerier');
 function getGenIdExistingNode(lwm2mResourceClass, solidPod) {
 	const node = getExistingNode(lwm2mResourceClass, solidPod);
 	// would perfectly fit ?. optional chaining operator :/
+	log.debug('Node genID:', node && node.value.split('/').pop());
 	return node && node.value.split('/').pop(); // get uuid
 }
 
@@ -23,5 +24,6 @@ function getExistingNode(lwm2mResourceClass, solidPod) {
 	log.debug('resources', resources);
 	log.debug('neededResource', neededResource);
 	// check neededResource is indeed a resource
+	log.debug('Return value:', resources.includes(neededResource) ? neededResource : undefined);
 	return resources.includes(neededResource) ? neededResource : undefined;
 }

@@ -47,6 +47,7 @@ function eventNotificationCallback(msg) {
 
 	log.info( `Recieved ${msg.type} from leshanServer: ${leshanServer.rdfBasename}`);
 	log.debug(`${msg.type} content is:`, content);
+	log.debug(`And the payload is:`, content.payload);
 
 	// for each solidPod connected to this particular leshanServer
 	for (const podN of leshanServer.solidPodTargets) {
