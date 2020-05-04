@@ -12,6 +12,7 @@ import rml from 'rocketrml'; 	// RML mapper to map JSON --> RDF
 import { v4 as uuidv4 } from 'uuid'; // Random ID generator
 import rootlogger from 'loglevel';
 import { objectClassToIRI, resourceClassToIRI, giveTimeStamp as giveTimeStamp } from './ontologySearcher.mjs';
+import { getGenIdExistingNode } from './solidPodQuerier.mjs';
 // Program parameters
 import {lwm2mOnto as ontology, rmlmappingfile, rmloptions, skolemization} from '../config/config.mjs';
 
@@ -26,8 +27,8 @@ let rmlmapping;
  *          leshanserver-object
  *   ouput: text/n3 (String)
  */
-export default async function jsonObjectToRDF(leshanJSONdata, lserver={ protocol: 'http', basename: 'localhost:8080', rdfBasename:'defaultLeshan.com'}) {
-	const rml_data_in = preprocessJSON(leshanJSONdata, lserver); //prepare rml_data_in
+export default async function jsonObjectToRDF(leshanJSONdata, lserver={ protocol: 'http', basename: 'localhost:8080', rdfBasename:'defaultLeshan.com'}, solidPod) {
+	const rml_data_in = await preprocessJSON(leshanJSONdata, lserver, solidPod); //prepare rml_data_in
 	return await rml.parseFileLive(rmlmapping, rml_data_in, rmloptions)
 		.catch( (err) => {log.error(err);});
 }
@@ -49,7 +50,7 @@ async function loadRMLmappingFile() {
  *   Coaplog format (is SenML) is assumed - Notification format is not supported anymore
  *   (see end of file for examples of the structure)
  */
-function preprocessJSON(leshanJSONdata, lserver) {
+async function preprocessJSON(leshanJSONdata, lserver, solidPod) {
 	const data = {};
 	data.leshanServer = {};	// Serveroptions
 	data.device = {};	// Device Endpoint options
@@ -70,9 +71,18 @@ function preprocessJSON(leshanJSONdata, lserver) {
 			stringvalue : meas.sv,
 			booleanvalue : meas.bv, // in RDF, this has xsd:boolean
 		};
+		// FEEDBACK coming from Solid
 		if (skolemization) {
 			// Could dynamically import uuid, but this is not suggested
+			// If this has a timestamp, give random ID
+			// If this has no timestamp, overwrite the previous one with this
 			datameas.skolemIRI = uuidv4();
+			const objRes = [datameas.object, datameas.resource];
+			const uuidExistingNode = getGenIdExistingNode(await resourceClassToIRI(objRes), solidPod);
+			if (!(await giveTimeStamp(objRes)) && uuidExistingNode) { // needs to be overwritten
+				log.debug('This is the UUID of the existing node', uuidExistingNode);
+				datameas.skolemIRI = uuidExistingNode;
+			}
 		}
 		data.meas.push(datameas); // new meas
 	}

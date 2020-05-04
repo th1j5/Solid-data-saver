@@ -43,17 +43,21 @@ function eventNotificationCallback(msg) {
 		if (!filterCoapMesgIsMeas(content)) return;
 		content.payload = JSON.parse(content.payload); // change string payload into JSON object
 	}
+	else throw new Error('Non-supported event');
 
 	log.info( `Recieved ${msg.type} from leshanServer: ${leshanServer.rdfBasename}`);
 	log.debug(`${msg.type} content is:`, content);
 
-	jsonToRDF(content, leshanServer).then(ntriples => { // json from this particular leshanServer will always have the same RDF, even for differen solidPod targets
-		log.trace('These are the ntriples in notificationCallback: ' + ntriples);
-		// for each solidPod connected to this particular leshanServer
-		leshanServer.solidPodTargets.forEach((podN) => {
-			addResourceMeasurement(ntriples, solidPods[podN]);
-		});
-	});
+	// for each solidPod connected to this particular leshanServer
+	for (const podN of leshanServer.solidPodTargets) {
+		// previous incorrect comment: json from this particular leshanServer will always have the same RDF, even for differen solidPod targets
+		// Because there is feedback coming from the solidPod, the RDF CAN be different
+		jsonToRDF(content, leshanServer, solidPods[podN]) 
+			.then(ntriples => {
+				log.trace('These are the ntriples in notificationCallback: ' + ntriples);
+				addResourceMeasurement(ntriples, solidPods[podN]);
+			});
+	}
 };
 
 /**

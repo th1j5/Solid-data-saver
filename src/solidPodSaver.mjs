@@ -30,6 +30,7 @@ async function solidLogIn() {
 			// Creating rdf lib constructs to be used with solid-auth-cli
 			const store = $rdf.graph();
 			const updater = new $rdf.UpdateManager(store);
+			const fetcher = new $rdf.Fetcher(store);
 			// Getting the right document
 			const podData = await getPodData(session.webId);
 
@@ -37,6 +38,9 @@ async function solidLogIn() {
 			solidPod.podData = podData;
 			solidPod.store = store;
 			solidPod.updater = updater;
+			solidPod.fetcher = fetcher;
+			// Loading already the doc
+			await fetcher.load(podData.iotDoc).catch((err) => {log.error("Error while fetching iotDoc: ", err)});
 		}).catch(err => { log.error(`Login error: ${err}`); throw err});
 	}
 	return;

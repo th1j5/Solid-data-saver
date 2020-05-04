@@ -6,15 +6,9 @@ rootlogger.setDefaultLevel(rootlogger.levels.INFO);
 // Set loglevel per Logger
 //rootlogger.getLogger('rmlmapper').setLevel(rootlogger.levels.DEBUG);
 //rootlogger.getLogger('solidPodSaver').setLevel(rootlogger.levels.DEBUG);
+//rootlogger.getLogger('solidPodQuerier').setLevel(rootlogger.levels.DEBUG);
 //rootlogger.getLogger('getPodData').setLevel(rootlogger.levels.DEBUG);
 //rootlogger.getLogger('leshanEventRetriever').setLevel(rootlogger.levels.DEBUG);
-
-// Namespaces
-const LDP = new $rdf.Namespace('https://www.w3.org/ns/ldp#');
-const SPACE = new $rdf.Namespace('http://www.w3.org/ns/pim/space#');
-const SOLID = new $rdf.Namespace('http://www.w3.org/ns/solid/terms#');
-const RDF = new $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-const SCHEMA = new $rdf.Namespace('http://schema.org/');
 
 // Credentials (UNSAFE AS ALL HELL - Only other option is a json file with this info, which is just as bad.)
 const solidPod = {
@@ -45,6 +39,15 @@ const rmloptions = {
     xmlPerformanceMode: false,
     replace: false};
 
-export {LDP, SPACE, SOLID, RDF, SCHEMA};
+// Namespaces
+const LDP = new $rdf.Namespace('https://www.w3.org/ns/ldp#');
+const SPACE = new $rdf.Namespace('http://www.w3.org/ns/pim/space#');
+const SOLID = new $rdf.Namespace('http://www.w3.org/ns/solid/terms#');
+const RDF = new $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+const SCHEMA = new $rdf.Namespace('http://schema.org/');
+const LWM2M = new $rdf.Namespace(ontology);
+
+
+export {LDP, SPACE, SOLID, RDF, SCHEMA, LWM2M};
 export { leshanServers, solidPods };
 export { ontology as lwm2mOnto, rmlmappingfile, rmloptions, skolemization};
