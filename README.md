@@ -1,6 +1,9 @@
-# soliddatasaver
+# Solid IoT (LwM2M) Data saver (soliddatasaver)
 ## Description
-Some code which allows us to save data in a users datapod (if their credentials are available) without interfacing through any GUI. (Fount in src/)
+This Node.js program allows us to save data from a Leshan server into a users Solid datapod (if their credentials are available), without having to interface with a GUI.
+
+## source files
+Found in src/
 - main.mjs: Starts the program. First logs in to the Solid pod(s) and dowloads the ontology, then registers itself at the leshan server(s).
 - leshanEventRetriever.mjs: Registers EventListener with a callback
 - rmlmapper.mjs: Maps incoming JSON object to RDF(N3). Does some preprocessing and uses then RocketRML.
@@ -20,7 +23,7 @@ This would be preferred, but 'rdflib.js' has some problems with blank nodes, thi
 
 ### Generator tool
 
-1. Go into generator.py and edit the program parameters to your liking.
+1. Go into `scripts/generator.py` and edit the program parameters to your liking.
 2. run `py generator.py` or `python3 generator.py` to generate the static data.
 
 ### Datasaver
