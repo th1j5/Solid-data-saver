@@ -3,7 +3,7 @@
 This Node.js program allows us to save data from a Leshan server into a users Solid datapod (if their credentials are available), without having to interface with a GUI.
 
 ## source files
-Found in src/
+Found in `src/`
 - main.mjs: Starts the program. First logs in to the Solid pod(s) and dowloads the ontology, then registers itself at the leshan server(s).
 - leshanEventRetriever.mjs: Registers EventListener with a callback
 - rmlmapper.mjs: Maps incoming JSON object to RDF(N3). Does some preprocessing and uses then RocketRML.
@@ -12,7 +12,7 @@ Found in src/
 - ontologySearcher.mjs: Downloads LwM2M ontology and uses this to query which Object/Resource Class is bound to which number.
 Thus, this is used to map objectnumber <-> objectname (like: object3303 <-> lwm2m:LWM2MTemperatureObject).
 
-In config/
+In `config/`
 - config.mjs: All configuration parameters can be adjusted here.
 - mapping_uuid.ttl: RML file to denote how the transformation from JSON to RDF has to happen.
 This file uses skolemization of blank nodes, which means that blank nodes get a random IRI.
